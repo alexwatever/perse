@@ -1,0 +1,56 @@
+
+/* Fonts */
+@font-face {
+  font-family: 'PT Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''),
+    url('../fonts/pt-sans-v12-latin-regular.woff2') format('woff2'),
+    url('../fonts/pt-sans-v12-latin-regular.woff') format('woff');
+}
+@font-face {
+  font-family: 'PT Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local(''),
+    url('../fonts/pt-sans-v12-latin-italic.woff2') format('woff2'),
+    url('../fonts/pt-sans-v12-latin-italic.woff') format('woff');
+}
+@font-face {
+  font-family: 'PT Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local(''),
+    url('../fonts/pt-sans-v12-latin-700.woff2') format('woff2'),
+    url('../fonts/pt-sans-v12-latin-700.woff') format('woff');
+}
+@font-face {
+  font-family: 'PT Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local(''),
+    url('../fonts/pt-sans-v12-latin-700italic.woff2') format('woff2'),
+    url('../fonts/pt-sans-v12-latin-700italic.woff') format('woff');
+}
+
+
+/* Basics */
+html, body {
+  font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+  color: #5e35b1;
+  font-weight: 400;
+}
+
+a {
+  color: #b39ddb;
+  text-decoration: none;
+  transition: color 2s;
+}
+
+a:active,
+a:hover,
+a:focus {
+  color: #5e35b1;
+  text-decoration: underline;
+}
+
