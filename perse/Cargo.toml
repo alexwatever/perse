@@ -8,6 +8,7 @@ authors = ["Alex Watson <alex@perse.dev>"]
 description = "Perse is a site-builder."
 repository = "https://github.com/alexwatever/perse"
 readme = "README.md"
+license = "Mozilla Public License 2.0"
 
 
 [lib]
