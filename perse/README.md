@@ -20,4 +20,5 @@ This project is part of the slow code movement and very much in development.
 #### Installation
 
 ```
+cargo install perse
 ```
