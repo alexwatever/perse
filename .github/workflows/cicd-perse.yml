@@ -19,14 +19,33 @@ jobs:
       - name: Checkout
         id: test-build-checkout
         uses: actions/checkout@v4
-      - name: Build Docker Image
+
+      - name: Build Docker Build
         id: test-build-docker-image
         run: |
           docker build -t ${{ env.DOCKER_TEST_TAG }} ${{ env.APP_NAME }}
-      - name: Run Docker Image
-        id: test-build-docker-run
-        run: |
-          docker run --rm ${{ env.DOCKER_TEST_TAG }}
+
+  deploy_cratesio:
+    needs: test_build
+    name: Deploy Crates.io Update
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - name: Checkout
+        id: deploy-cratesio-checkout
+        uses: actions/checkout@v4
+
+      - uses: actions-rs/toolchain@v1
+        id: deploy-cratesio-toolchain
+        with:
+          toolchain: nightly
+          override: true
+
+      - uses: katyo/publish-crates@v2
+        id: deploy-cratesio-cratesio
+        with:
+          path: './${{ env.APP_NAME }}'
+          registry-token: ${{ secrets.PERSE_CRATESIO_API_TOKEN }}
 
   deploy_persedev:
     needs: test_build
@@ -38,7 +57,7 @@ jobs:
     steps:
       - name: Checkout
         id: deploy-persedev-checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Load action - SuperFly
         id: deploy-persedev-load-superfly
