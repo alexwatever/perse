@@ -26,7 +26,7 @@ jobs:
       - name: Run Docker Image
         id: test-build-docker-run
         run: |
-          docker run --rm ${{ env.DOCKER_TEST_TAG }} ${{ env.APP_NAME }}
+          docker run --rm ${{ env.DOCKER_TEST_TAG }}
 
   deploy_persedev:
     needs: test_build
