@@ -8,7 +8,6 @@ on:
 
 env:
   APP_NAME: perse
-  DOCKER_TEST_TAG: perse:test
   DOCKER_LATEST_TAG: perse:latest
 
 jobs:
@@ -23,7 +22,7 @@ jobs:
       - name: Test Docker Build
         id: test-build-docker-image
         run: |
-          docker build -t ${{ env.DOCKER_TEST_TAG }} ${{ env.APP_NAME }}
+          docker build -t ${{ env.DOCKER_LATEST_TAG }} ${{ env.APP_NAME }}
 
   deploy_cratesio:
     needs: tests

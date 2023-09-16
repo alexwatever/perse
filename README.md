@@ -1,7 +1,7 @@
 
 # Perse
 
-[![crates.io](https://img.shields.io/crates/v/perse.svg)](https://crates.io/crates/perse) [![docs.rs](https://docs.rs/perse/badge.svg)](https://docs.rs/perse) [![CICD](https://github.com/alexwatever/perse/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/alexwatever/perse/actions/workflows/cicd.yml)
+[![Crates.io](https://img.shields.io/crates/v/perse.svg)](https://crates.io/crates/perse) [![Docs.rs](https://docs.rs/perse/badge.svg)](https://docs.rs/perse) ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/alexwatever/perse/cicd.yml)
 
 
 ## About
