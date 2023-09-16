@@ -12,22 +12,22 @@ env:
   DOCKER_LATEST_TAG: perse:latest
 
 jobs:
-  test_build:
-    name: Test Builds
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         id: test-build-checkout
         uses: actions/checkout@v4
 
-      - name: Build Docker Build
+      - name: Test Docker Build
         id: test-build-docker-image
         run: |
           docker build -t ${{ env.DOCKER_TEST_TAG }} ${{ env.APP_NAME }}
 
   deploy_cratesio:
-    needs: test_build
-    name: Deploy Crates.io Update
+    needs: tests
+    name: Release Crates.io Package Update
     runs-on: ubuntu-latest
     environment: Production
     steps:
@@ -48,8 +48,8 @@ jobs:
           registry-token: ${{ secrets.PERSE_CRATESIO_API_TOKEN }}
 
   deploy_persedev:
-    needs: test_build
-    name: Deploy Perse.dev App
+    needs: tests
+    name: Deploy Perse.dev Application
     runs-on: ubuntu-latest
     environment: Production
     env:
