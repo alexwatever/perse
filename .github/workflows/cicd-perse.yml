@@ -14,8 +14,13 @@ jobs:
     env:
       FLY_API_TOKEN: ${{ secrets.PERSE_FLY_ACCESS_TOKEN }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v3
+
+      - name: Prepare SuperFly action
+        uses: superfly/flyctl-actions/setup-flyctl@master
+        with:
+          version: 1.4
 
       - name: Deploy to Fly.io
         run: |
