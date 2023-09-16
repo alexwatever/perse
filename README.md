@@ -14,11 +14,16 @@ This project is part of the slow code movement and very much in development.
 
 #### Dependencies
 
-[**Rust Nightly**](https://rust-lang.github.io/rustup/concepts/channels.html)
-[**cargo-leptos**](https://github.com/leptos-rs/cargo-leptos)
+[**Rust Nightly**](https://rust-lang.github.io/rustup/concepts/channels.html)  
+[**cargo-leptos**](https://github.com/leptos-rs/cargo-leptos)  
 
 #### Installation
 
 ```
-cargo install perse
+```
+
+#### Build Site
+
+```
+cargo leptos watch
 ```
