@@ -31,6 +31,7 @@ cargo install cargo-leptos
 #### Build Site
 
 ```
+flyctl proxy 5432:5432 -a perse-db
 cargo leptos watch
 ```
 <br>

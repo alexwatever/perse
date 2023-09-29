@@ -11,11 +11,11 @@ impl Database {
         dotenv::dotenv().ok();
         Self::create_connection_pool(
             std::env::var("PERSE_DATABASE_URL")
-                .unwrap_or_else(|_| "".to_string()),
+                .expect("The `PERSE_DATABASE_URL` environment variable is not available."),
             std::env::var("PERSE_DATABASE_MAX_CONNECTIONS")
-                .unwrap_or_else(|_| "".to_string())
-                .parse::<u32>()
-                .unwrap_or_else(|_| 0_u32),
+                .expect("The `PERSE_DATABASE_MAX_CONNECTIONS` environment variable is not available.")
+                .parse::<u32>() 
+                .expect("The `PERSE_DATABASE_MAX_CONNECTIONS` environment variable is in an incorrect format."),
         )
         .await
     }
