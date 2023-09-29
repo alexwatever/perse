@@ -17,15 +17,33 @@ This project is part of the slow code movement and is very much in development.
 #### Dependencies
 
 [**Rust Nightly**](https://rust-lang.github.io/rustup/concepts/channels.html)  
-[**cargo-leptos**](https://github.com/leptos-rs/cargo-leptos)  
+[**cargo-leptos:**](https://crates.io/crates/cargo-leptos)
+```
+cargo install cargo-leptos
+```
 
 #### Installation
 
 ```
+
 ```
 
 #### Build Site
 
 ```
 cargo leptos watch
+```
+<br>
+
+
+## Tools
+
+Use [**SQLx CLI:**](https://crates.io/crates/sqlx-cli) to manage Migrations.  
+```
+cargo install sqlx-cli
+```
+
+Update your [**rust-analyzer:**](https://crates.io/crates/sqlx-cli) configuration to include the following, to enable intellisense for both SSR and CSR.  
+```
+"rust-analyzer.cargo.features": "all",
 ```
