@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true,
+		"rust-analyzer.showUnlinkedFileNotification": false,
+		"rust-analyzer.diagnostics.disabled": ["unresolved-proc-macro"],
+		"rust-analyzer.cargo.features": "all",
+		"rust-analyzer.linkedProjects": []
+	}
+}
