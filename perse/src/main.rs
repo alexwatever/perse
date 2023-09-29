@@ -1,15 +1,18 @@
-mod db;
 
+/////////////
 /// # Perse
+/////////////
 #[cfg(feature = "ssr")]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    log!("Launching Perse...");
+    use leptos::logging::log;
     use actix_files::Files;
     use actix_web::*;
     use leptos::*;
     use leptos_actix::{generate_route_list, LeptosRoutes};
     use perse::app::*;
+    use perse::db;
+    log!("Launching Perse...");
 
     // Initialising the Database connection
     log!("Initialising the Database connection...");
@@ -57,8 +60,8 @@ async fn main() -> std::io::Result<()> {
             // set the Routes
             .leptos_routes(
                 leptos_options.to_owned(),
-                generate_route_list(|cx| view! { cx, <App/> }),
-                |cx| view! { cx, <App/> },
+                generate_route_list(|| view! { <App/> }),
+                || view! { <App/> },
             )
             // set the Application State
             .app_data(web::Data::new(leptos_options.to_owned()))
@@ -74,8 +77,9 @@ async fn main() -> std::io::Result<()> {
 }
 
 /// # Application State
+#[cfg(feature = "ssr")]
 pub struct PerseState<'a> {
-    db: &'a db::DatabasePool,
+    db: &'a perse::db::DatabasePool,
     // env: Configuration,
 }
 
@@ -109,9 +113,9 @@ pub fn main() {
 
     console_error_panic_hook::set_once();
 
-    leptos::mount_to_body(move |cx| {
+    leptos::mount_to_body(move || {
         // note: for testing it may be preferrable to replace this with a
         // more specific component, although leptos_router should still work
-        view! {cx, <App/> }
+        view! {<App/> }
     });
 }

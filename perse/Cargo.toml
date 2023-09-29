@@ -35,28 +35,30 @@ actix-web = { version = "=4", optional = true, features = ["macros"] }
 console_error_panic_hook = { version = "=0.1" }
 cfg-if = { version = "=1" }
 http = { version = "=0.2", optional = true }
-leptos = { version = "=0.4", features = ["nightly"] }
-leptos_meta = { version = "=0.4", features = ["nightly"] }
-leptos_actix = { version = "=0.4", optional = true }
-leptos_router = { version = "=0.4", features = ["nightly"] }
+leptos = { version = "=0.5.0-rc3", features = ["nightly"] }
+leptos_meta = { version = "=0.5.0-rc3", features = ["nightly"] }
+leptos_actix = { version = "=0.5.0-rc3", optional = true }
+leptos_router = { version = "=0.5.0-rc3", features = ["nightly"] }
 wasm-bindgen = { version = "=0.2.87" }
 
 [dev-dependencies]
 
 
 [features]
-#######################
-### Leptos `features`
-#######################
-csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 ssr = [
+  #######################
+  ### Leptos `features`
+  #######################
   "dep:actix-files",
   "dep:actix-web",
-  "dep:leptos_actix",
   "leptos/ssr",
+  "leptos_actix",
   "leptos_meta/ssr",
   "leptos_router/ssr",
+  ######################
+  ### Perse `features`
+  ######################
   "dep:dotenv",
   "dep:sqlx",
   "dep:once_cell",
@@ -66,7 +68,7 @@ ssr = [
 #####################
 ### Perse Deny List
 #####################
-denylist = ["sqlx"]
+denylist = ["actix-files", "actix-web", "leptos_actix", "sqlx"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 
@@ -100,4 +102,3 @@ bin-features = ["ssr"] # The features to use when compiling the bin target. [Opt
 bin-default-features = false # If the --no-default-features flag should be used when compiling the bin target. [Optional] Defaults to false
 lib-features = ["hydrate"] # The features to use when compiling the lib target. [Optional] Can be over-ridden with the command line parameter --lib-features
 lib-default-features = false # If the --no-default-features flag should be used when compiling the lib target. [Optional] Defaults to false
-lib-profile-release = "wasm-release" # The profile to use for the lib target when compiling for release. [Optional] Defaults to "release"
