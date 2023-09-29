@@ -35,33 +35,4 @@ impl Database {
             .connect(&database_url)
             .await
     }
-    
-    // /// Get a database connection from the database pool
-    // #[cfg(feature = "ssr")]
-    // pub async fn get_connection() -> DatabaseConnection {
-    //     DatabaseConnection(DATABASE_POOL
-    //         .get()
-    //         .expect("Unable to retrieve the database connection pool reference.")
-    //         .clone()
-    //         .acquire()
-    //         .await
-    //         .expect("Unable to retrieve a database connection.")
-    //     )
-    // }
 }
-
-// /// Implement Dereference for DatabaseConnections, if required by sqlx/postgres (yet to be validated)
-// pub struct DatabaseConnections(pub sqlx::Pool<sqlx::Postgres>);
-// impl std::ops::Deref for DatabaseConnections {
-//     type Target = sqlx::Pool<sqlx::Postgres>;
-//     #[cfg(feature = "ssr")]
-//     fn deref(&self) -> &Self::Target {
-//         &self
-//     }
-// }
-// impl std::ops::DerefMut for DatabaseConnections {
-//     #[cfg(feature = "ssr")]
-//     fn deref_mut(&mut self) -> &mut Self::Target {
-//         self
-//     }
-// }
