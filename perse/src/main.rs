@@ -4,16 +4,15 @@ mod db;
 #[cfg(feature = "ssr")]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    info!("Launching Perse...");
+    log!("Launching Perse...");
     use actix_files::Files;
     use actix_web::*;
     use leptos::*;
     use leptos_actix::{generate_route_list, LeptosRoutes};
-    use tracing::info;
     use perse::app::*;
 
     // Initialising the Database connection
-    info!("Initialising the Database connection...");
+    log!("Initialising the Database connection...");
     let db: &db::DatabasePool;
     match db::Database::initialise().await {
         Ok(result) => {
@@ -30,22 +29,22 @@ async fn main() -> std::io::Result<()> {
     }
 
     // Check and run Database Migrations
-    info!("Checking for Database migrations...");
+    log!("Checking for Database migrations...");
     sqlx::migrate!()
         .run(db)
         .await
         .expect("Unable to run the database migrations.");
 
     // Get Leptos Configuration
-    info!("Getting the Web Server configuration...");
+    log!("Getting the Web Server configuration...");
     let conf = get_configuration(None).await.unwrap();
     let addr = conf.leptos_options.site_addr;
 
     // Start Web Server
+    log!("Starting Perse!");
     HttpServer::new(move || {
         let leptos_options = &conf.leptos_options;
         let site_root = &leptos_options.site_root;
-        info!("Starting Perse!");
         App::new()
             // setup the server functions
             .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
