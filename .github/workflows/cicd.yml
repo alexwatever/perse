@@ -43,7 +43,7 @@ jobs:
       - uses: katyo/publish-crates@v2
         id: deploy-cratesio-cratesio
         with:
-          path: './${{ env.APP_NAME }}'
+          path: './${{ env.APP_NAME }}/${{ env.APP_NAME }}_core'
           registry-token: ${{ secrets.PERSE_CRATESIO_API_TOKEN }}
 
   deploy_persedev:
