@@ -12,35 +12,14 @@ async fn main() -> std::io::Result<()> {
     use leptos::logging::log;
     log!("Launching Perse...");
 
-    // Initialising the Database connection
-    log!("Initialising the Database connection...");
-    use perse::modules::db;
-    let database: &db::DatabasePool;
-    match db::Database::initialise().await {
-        Ok(result) => {
-            // Allocate the Database connection pool reference
-            db::DATABASE_POOL
-                .set(result)
-                .expect("The database connection pool could not be created.");
-
-            // Retrieve the Database connection pool
-            database = db::Database::get_connection_pool()
-                .expect("The database connection pool could not be retrieved.");
-        },
-        Err(err) => panic!("The database failed to initialise: \n{:#?}", err)
-    }
-
-    // Check and run Database Migrations
-    log!("Checking for Database migrations...");
-    sqlx::migrate!()
-        .run(database)
-        .await
-        .expect("Unable to run the database migrations.");
-
     // Get Leptos Configuration
     log!("Getting the Web Server configuration...");
-    let conf = get_configuration(None).await.unwrap();
+    let conf = get_configuration(None).await.expect("Failed to load the Leptos configuration.");
     let addr = conf.leptos_options.site_addr;
+
+    // Initialising the Database connection
+    log!("Initialising the Database connection pool and checking for pending migrations...");
+    let database = perse_data::Database::setup().await;
 
     // Start Web Server
     log!("Starting Perse!");
@@ -79,7 +58,7 @@ async fn main() -> std::io::Result<()> {
 /// # Application State
 #[cfg(feature = "ssr")]
 pub struct PerseState<'a> {
-    database: &'a perse::modules::db::DatabasePool,
+    database: &'a perse_data::DatabasePool,
     // env: Configuration,
 }
 

@@ -2084,15 +2084,23 @@ dependencies = [
  "actix-web",
  "cfg-if",
  "console_error_panic_hook",
- "dotenv",
  "http",
  "leptos",
  "leptos_actix",
  "leptos_meta",
  "leptos_router",
+ "perse_data",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "perse_data"
+version = "0.1.0"
+dependencies = [
+ "cfg-if",
+ "dotenv",
  "once_cell",
  "sqlx",
- "wasm-bindgen",
 ]
 
 [[package]]
