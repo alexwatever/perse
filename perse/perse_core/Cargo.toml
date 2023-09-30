@@ -1,0 +1,101 @@
+
+#########
+# Perse
+#########
+[package]
+name = "perse"
+version = "0.1.5"
+edition = "2021"
+authors = ["Alex Watson <hello@perse.dev>"]
+description = "Perse is a site-builder."
+repository = "https://github.com/alexwatever/perse"
+readme = "README.md"
+license = "MPL-2.0"
+
+
+[dependencies]
+##########################
+### Perse `dependencies`
+##########################
+dotenv = { version = "=0.15.0", optional = true }
+sqlx = { version = "=0.7.1", optional = true, features = [ "postgres", "runtime-tokio", "tls-native-tls", "macros", "uuid", "chrono", "bigdecimal", "json" ] }
+once_cell = { version = "=1.18.0", optional = true }
+
+###########################
+### Leptos `dependencies`
+###########################
+actix-files = { version = "=0.6", optional = true }
+actix-web = { version = "=4", optional = true, features = ["macros"] }
+console_error_panic_hook = { version = "=0.1" }
+cfg-if = { version = "=1" }
+http = { version = "=0.2", optional = true }
+leptos = { version = "=0.5.0-rc3", features = ["nightly"] }
+leptos_meta = { version = "=0.5.0-rc3", features = ["nightly"] }
+leptos_actix = { version = "=0.5.0-rc3", optional = true }
+leptos_router = { version = "=0.5.0-rc3", features = ["nightly"] }
+wasm-bindgen = { version = "=0.2.87" }
+
+[dev-dependencies]
+
+
+[features]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+ssr = [
+  ######################
+  ### Perse `features`
+  ######################
+  "dep:dotenv",
+  "dep:sqlx",
+  "dep:once_cell",
+  #######################
+  ### Leptos `features`
+  #######################
+  "dep:actix-files",
+  "dep:actix-web",
+  "leptos/ssr",
+  "leptos_actix",
+  "leptos_meta/ssr",
+  "leptos_router/ssr",
+]
+
+[package.metadata.cargo-all-features]
+#####################
+### Perse Deny List
+#####################
+denylist = ["actix-files", "actix-web", "leptos_actix"]
+skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
+
+
+##########################
+### Leptos Configuration
+##########################
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+# Defines a size-optimized profile for the WASM bundle in release mode
+# [profile.wasm-release]
+# inherits = "release"
+# opt-level = 'z'
+# lto = true
+# codegen-units = 1
+# panic = "abort"
+
+# Defines the Leptos metadata and configuration
+[package.metadata.leptos]
+output-name = "perse" # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name   
+end2end-dir = "end2end" # The site-root relative folder where all backend (SSR) project code is located. Defaults to end2end-dir
+site-root = "target/site" # The site root folder is where cargo-leptos generate all output. WARNING: all content of this folder will be erased on a rebuild. Use it in your server setup
+site-pkg-dir = "pkg" # The site-root relative folder where all compiled output (JS, WASM and CSS) is written. Defaults to pkg	
+style-file = "themes/default/style/main.scss" # [Optional] The source CSS file. If it ends with .sass or .scss then it will be compiled by dart-sass into CSS. The CSS is optimized by Lightning CSS before being written to <site-root>/<site-pkg>/app.css
+assets-dir = "themes/default/assets" # Assets source dir. All files found here will be copied and synchronized to site-root. The assets-dir cannot have a sub directory with the same name/path as site-pkg-dir. [Optional] Env: Leptos_ASSETS_DIR
+site-addr = "127.0.0.1:3000" # The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.
+reload-port = 3001 # The port to use for automatic reload monitoring
+end2end-cmd = "npx playwright test" # [Optional] Command to use when running end2end tests. It will run in the end2end dir. [Windows] for non-WSL use "npx.cmd playwright test". This binary name can be checked in Powershell with Get-Command npx
+browserquery = "defaults" #  The browserlist query used for optimizing the CSS
+watch = false # Set by cargo-leptos watch when building with that tool. Controls whether autoreload JS will be included in the head
+env = "DEV" # The environment Leptos will run in, usually either "DEV" or "PROD"
+bin-features = ["ssr"] # The features to use when compiling the bin target. [Optional] Can be over-ridden with the command line parameter --bin-features
+bin-default-features = false # If the --no-default-features flag should be used when compiling the bin target. [Optional] Defaults to false
+lib-features = ["hydrate"] # The features to use when compiling the lib target. [Optional] Can be over-ridden with the command line parameter --lib-features
+lib-default-features = false # If the --no-default-features flag should be used when compiling the lib target. [Optional] Defaults to false
