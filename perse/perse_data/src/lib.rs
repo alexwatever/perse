@@ -2,9 +2,8 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use once_cell::sync::OnceCell;
-        use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
         
-        pub type DatabasePool = Pool<Postgres>;
+        pub type DatabasePool = sqlx::Pool<sqlx::Postgres>;
         pub static DATABASE_POOL: OnceCell<DatabasePool> = OnceCell::new();
         
         pub struct Database {}
@@ -12,12 +11,13 @@ cfg_if::cfg_if! {
             /// Initialise and return a reference to the database connection pool
             pub async fn setup() -> &'static DatabasePool {
                 dotenv::dotenv().ok();
+                use std::env;
                 
                 // Create a new PostgreSQL database connection pool
                 let database: DatabasePool = Self::create_connection_pool(
-                        std::env::var("PERSE_DATABASE_URL")
+                        env::var("PERSE_DATABASE_URL")
                             .expect("The `PERSE_DATABASE_URL` environment variable is not available."),
-                        std::env::var("PERSE_DATABASE_MAX_CONNECTIONS")
+                        env::var("PERSE_DATABASE_MAX_CONNECTIONS")
                             .expect("The `PERSE_DATABASE_MAX_CONNECTIONS` environment variable is not available.")
                             .parse::<u32>() 
                             .expect("The `PERSE_DATABASE_MAX_CONNECTIONS` environment variable is in an incorrect format."),
@@ -35,12 +35,9 @@ cfg_if::cfg_if! {
                     .set(database)
                     .expect("The database connection pool could not be created.");
 
-                // Retrieve the Database connection pool
-                let database = Self::get_connection_pool()
-                    .expect("The database connection pool could not be retrieved.");
-
-                // Return the connection pool
-                database
+                // Retrieve and return the Database connection pool
+                Self::get_connection_pool()
+                    .expect("The database connection pool could not be retrieved.")
             }
         
             /// Get the existing database pool
@@ -51,7 +48,7 @@ cfg_if::cfg_if! {
             /// Create the initial database connection pool
             async fn create_connection_pool(database_url: String, max_connections: u32) -> DatabasePool {
                 // Setup a new PostgreSQL database connection pool with provided configuration
-                PgPoolOptions::new()
+                sqlx::postgres::PgPoolOptions::new()
                     .max_connections(max_connections)
                     .connect(&database_url)
                     .await

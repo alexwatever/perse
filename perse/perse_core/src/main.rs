@@ -10,19 +10,18 @@ async fn main() -> std::io::Result<()> {
     use leptos::*;
     use leptos_actix::{generate_route_list, LeptosRoutes};
     use leptos::logging::log;
-    log!("Launching Perse...");
-
+    
     // Get Leptos Configuration
-    log!("Getting the Web Server configuration...");
+    log!("Configuring Perse...");
     let conf = get_configuration(None).await.expect("Failed to load the Leptos configuration.");
     let addr = conf.leptos_options.site_addr;
-
+    
     // Initialising the Database connection
     log!("Initialising the Database connection pool and checking for pending migrations...");
     let database = perse_data::Database::setup().await;
-
+    
     // Start Web Server
-    log!("Starting Perse!");
+    log!("Launching Perse!");
     use perse::modules::app::*;
     HttpServer::new(move || {
         let leptos_options = &conf.leptos_options;
@@ -45,8 +44,8 @@ async fn main() -> std::io::Result<()> {
             // set the Application State
             .app_data(web::Data::new(leptos_options.to_owned()))
             .app_data(web::Data::new(PerseState {
-                database,
-                // env: Configuration::init(),
+                _database: database,
+                // env: Configuration::setup(),
             }))
             //.wrap(middleware::Compress::default())
     })
@@ -58,7 +57,7 @@ async fn main() -> std::io::Result<()> {
 /// # Application State
 #[cfg(feature = "ssr")]
 pub struct PerseState<'a> {
-    database: &'a perse_data::DatabasePool,
+    _database: &'a perse_data::DatabasePool,
     // env: Configuration,
 }
 
