@@ -5,18 +5,17 @@
 #[cfg(feature = "ssr")]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    use leptos::logging::log;
     use actix_files::Files;
     use actix_web::*;
     use leptos::*;
     use leptos_actix::{generate_route_list, LeptosRoutes};
-    use perse::app::*;
-    use perse::db;
+    use leptos::logging::log;
     log!("Launching Perse...");
 
     // Initialising the Database connection
     log!("Initialising the Database connection...");
-    let db: &db::DatabasePool;
+    use perse::modules::db;
+    let database: &db::DatabasePool;
     match db::Database::initialise().await {
         Ok(result) => {
             // Allocate the Database connection pool reference
@@ -25,7 +24,7 @@ async fn main() -> std::io::Result<()> {
                 .expect("The database connection pool could not be created.");
 
             // Retrieve the Database connection pool
-            db = db::Database::get_connection_pool()
+            database = db::Database::get_connection_pool()
                 .expect("The database connection pool could not be retrieved.");
         },
         Err(err) => panic!("The database failed to initialise: \n{:#?}", err)
@@ -34,7 +33,7 @@ async fn main() -> std::io::Result<()> {
     // Check and run Database Migrations
     log!("Checking for Database migrations...");
     sqlx::migrate!()
-        .run(db)
+        .run(database)
         .await
         .expect("Unable to run the database migrations.");
 
@@ -45,6 +44,7 @@ async fn main() -> std::io::Result<()> {
 
     // Start Web Server
     log!("Starting Perse!");
+    use perse::modules::app::*;
     HttpServer::new(move || {
         let leptos_options = &conf.leptos_options;
         let site_root = &leptos_options.site_root;
@@ -66,7 +66,7 @@ async fn main() -> std::io::Result<()> {
             // set the Application State
             .app_data(web::Data::new(leptos_options.to_owned()))
             .app_data(web::Data::new(PerseState {
-                db,
+                database,
                 // env: Configuration::init(),
             }))
             //.wrap(middleware::Compress::default())
@@ -79,7 +79,7 @@ async fn main() -> std::io::Result<()> {
 /// # Application State
 #[cfg(feature = "ssr")]
 pub struct PerseState<'a> {
-    db: &'a perse::db::DatabasePool,
+    database: &'a perse::modules::db::DatabasePool,
     // env: Configuration,
 }
 
