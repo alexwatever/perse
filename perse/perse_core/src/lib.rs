@@ -1,4 +1,4 @@
-pub mod modules;
+pub mod app;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "hydrate")] {
@@ -9,7 +9,7 @@ cfg_if::cfg_if! {
 
         #[wasm_bindgen]
         pub fn hydrate() {
-            use modules::app::*;
+            use app::*;
             use leptos::*;
 
             console_error_panic_hook::set_once();

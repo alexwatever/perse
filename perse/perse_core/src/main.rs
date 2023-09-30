@@ -19,10 +19,13 @@ async fn main() -> std::io::Result<()> {
     // Initialising the Database connection
     log!("Initialising the Database connection pool and checking for pending migrations...");
     let database = perse_data::Database::setup().await;
+
+    // Importing the Routes and Components
+    log!("Importing the Routes and Components...");
+    use perse::app::App;
     
     // Start Web Server
     log!("Launching Perse!");
-    use perse::modules::app::*;
     HttpServer::new(move || {
         let leptos_options = &conf.leptos_options;
         let site_root = &leptos_options.site_root;
@@ -35,7 +38,7 @@ async fn main() -> std::io::Result<()> {
             .service(Files::new("/assets", site_root))
             // serve the Favicon from /favicon.ico
             .service(favicon)
-            // set the Routes
+            // setup the Routes
             .leptos_routes(
                 leptos_options.to_owned(),
                 generate_route_list(|| view! { <App/> }),
