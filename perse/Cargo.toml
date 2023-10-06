@@ -11,7 +11,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.8"
+version = "0.1.9"
 
 
 [workspace.dependencies]
@@ -19,8 +19,8 @@ version = "0.1.8"
 ### Perse `dependencies`
 ##########################
 perse = { path = "./perse_core", version = "=0.1.8" }
-perse_controller = { path = "./perse_controller", version = "=0.1.8" }
-perse_data = { path = "./perse_data", version = "=0.1.8" }
+perse_controller = { path = "./perse_controller", version = "=0.1.1" }
+perse_data = { path = "./perse_data", version = "=0.1.0" }
 
 ###########################
 ### Leptos `dependencies`
