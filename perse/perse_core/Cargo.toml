@@ -2,86 +2,71 @@
 #########
 # Perse
 #########
+
 [package]
 name = "perse"
-version = "0.1.5"
+version = "0.1.8"
 edition = "2021"
 authors = ["Alex Watson <hello@perse.dev>"]
 description = "Perse is a site-builder."
 repository = "https://github.com/alexwatever/perse"
-readme = "README.md"
+readme = "../README.md"
 license = "MPL-2.0"
 
-
 [dependencies]
-##########################
-### Perse `dependencies`
-##########################
-dotenv = { version = "=0.15.0", optional = true }
-sqlx = { version = "=0.7.1", optional = true, features = [ "postgres", "runtime-tokio", "tls-native-tls", "macros", "uuid", "chrono", "bigdecimal", "json" ] }
-once_cell = { version = "=1.18.0", optional = true }
+perse_controller = { workspace = true, default-features = false, optional = true }
+perse_data = { workspace = true, optional = true }
 
-###########################
-### Leptos `dependencies`
-###########################
-actix-files = { version = "=0.6", optional = true }
-actix-web = { version = "=4", optional = true, features = ["macros"] }
-console_error_panic_hook = { version = "=0.1" }
-cfg-if = { version = "=1" }
-http = { version = "=0.2", optional = true }
 leptos = { version = "=0.5.0-rc3", features = ["nightly"] }
 leptos_meta = { version = "=0.5.0-rc3", features = ["nightly"] }
 leptos_actix = { version = "=0.5.0-rc3", optional = true }
 leptos_router = { version = "=0.5.0-rc3", features = ["nightly"] }
+actix-files = { version = "=0.6", optional = true }
+actix-web = { version = "=4", optional = true, features = ["macros"] }
+cfg-if = { workspace = true }
+http = { version = "=0.2", optional = true }
+console_log = { version = "=1" }
+console_error_panic_hook = { version = "=0.1" }
 wasm-bindgen = { version = "=0.2.87" }
+
+dotenv = { version = "=0.15.0", optional = true }
+sqlx = { version = "=0.7.1", optional = true, features = [ "postgres", "runtime-tokio", "tls-native-tls", "macros", "uuid", "chrono", "bigdecimal", "json" ] }
+once_cell = { version = "=1.18.0", optional = true }
 
 [dev-dependencies]
 
-
 [features]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+hydrate = [
+  "dep:perse_controller",
+
+  "leptos/hydrate",
+  "leptos_meta/hydrate",
+  "leptos_router/hydrate",
+]
 ssr = [
-  ######################
-  ### Perse `features`
-  ######################
+  "dep:perse_controller",
+  "dep:perse_data",
+  "perse_data/ssr",
+
+  "leptos/ssr",
+  "leptos_meta/ssr",
+  "leptos_router/ssr",
+  "leptos_actix",
+  "dep:actix-files",
+  "dep:actix-web",
+
   "dep:dotenv",
   "dep:sqlx",
   "dep:once_cell",
-  #######################
-  ### Leptos `features`
-  #######################
-  "dep:actix-files",
-  "dep:actix-web",
-  "leptos/ssr",
-  "leptos_actix",
-  "leptos_meta/ssr",
-  "leptos_router/ssr",
 ]
-
-[package.metadata.cargo-all-features]
-#####################
-### Perse Deny List
-#####################
-denylist = ["actix-files", "actix-web", "leptos_actix"]
-skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 
 ##########################
 ### Leptos Configuration
 ##########################
-
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-# Defines a size-optimized profile for the WASM bundle in release mode
-# [profile.wasm-release]
-# inherits = "release"
-# opt-level = 'z'
-# lto = true
-# codegen-units = 1
-# panic = "abort"
-
-# Defines the Leptos metadata and configuration
 [package.metadata.leptos]
 output-name = "perse" # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name   
 end2end-dir = "end2end" # The site-root relative folder where all backend (SSR) project code is located. Defaults to end2end-dir

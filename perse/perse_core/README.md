@@ -1,3 +1,0 @@
-
-# Perse Core
-<br>
