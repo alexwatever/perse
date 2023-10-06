@@ -6,19 +6,21 @@
 resolver = "2"
 members = [
   "perse_core",
+  "perse_controller",
   "perse_data",
 ]
 
 [workspace.package]
-version = "0.1.7"
+version = "0.1.8"
 
 
 [workspace.dependencies]
 ##########################
 ### Perse `dependencies`
 ##########################
-perse = { path = "./perse_core", version = "=0.1.7" }
-perse_data = { path = "./perse_data", version = "=0.1.7" }
+perse = { path = "./perse_core", version = "=0.1.8" }
+perse_controller = { path = "./perse_controller", version = "=0.1.8" }
+perse_data = { path = "./perse_data", version = "=0.1.8" }
 
 ###########################
 ### Leptos `dependencies`
@@ -30,6 +32,11 @@ cfg-if = { version = "=1" }
 ### Leptos Configuration
 ##########################
 
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 'z'
+
 [profile.wasm-release]
 inherits = "release"
 opt-level = 'z'
@@ -38,4 +45,5 @@ codegen-units = 1
 panic = "abort"
 
 [workspace.metadata.cargo-all-features]
+denylist = ["actix-files", "actix-web", "leptos_actix"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]

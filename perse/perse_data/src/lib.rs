@@ -1,14 +1,17 @@
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use once_cell::sync::OnceCell;
+        /// # Perse Data
         
+        /// # Database Pool
+        use once_cell::sync::OnceCell;
         pub type DatabasePool = sqlx::Pool<sqlx::Postgres>;
         pub static DATABASE_POOL: OnceCell<DatabasePool> = OnceCell::new();
         
+        /// # Database
         pub struct Database {}
         impl Database {
-            /// Initialise and return a reference to the database connection pool
+            // ## Initialise and return a reference to the database connection pool
             pub async fn setup() -> &'static DatabasePool {
                 dotenv::dotenv().ok();
                 use std::env;
@@ -40,12 +43,12 @@ cfg_if::cfg_if! {
                     .expect("The database connection pool could not be retrieved.")
             }
         
-            /// Get the existing database pool
+            // Get the existing database pool
             pub fn get_connection_pool() -> Option<&'static DatabasePool> {
                 DATABASE_POOL.get()
             }
         
-            /// Create the initial database connection pool
+            // Create the initial database connection pool
             async fn create_connection_pool(database_url: String, max_connections: u32) -> DatabasePool {
                 // Setup a new PostgreSQL database connection pool with provided configuration
                 sqlx::postgres::PgPoolOptions::new()
@@ -55,6 +58,5 @@ cfg_if::cfg_if! {
                     .expect("Failed to create a database connection pool.")
             }
         }
-
-   }
+    }
 }

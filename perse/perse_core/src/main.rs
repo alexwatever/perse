@@ -1,7 +1,7 @@
 
-/////////////
 /// # Perse
-/////////////
+
+/// # Backend Entry Point
 #[cfg(feature = "ssr")]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -10,7 +10,9 @@ async fn main() -> std::io::Result<()> {
     use leptos::*;
     use leptos_actix::{generate_route_list, LeptosRoutes};
     use leptos::logging::log;
-    
+    use perse_data::Database;
+    console_error_panic_hook::set_once();
+
     // Get Leptos Configuration
     log!("Configuring Perse...");
     let conf = get_configuration(None).await.expect("Failed to load the Leptos configuration.");
@@ -18,11 +20,11 @@ async fn main() -> std::io::Result<()> {
     
     // Initialising the Database connection
     log!("Initialising the Database connection pool and checking for pending migrations...");
-    let database = perse_data::Database::setup().await;
+    let database = Database::setup().await;
 
     // Importing the Routes and Components
     log!("Importing the Routes and Components...");
-    use perse::app::App;
+    use perse_controller::*;
     
     // Start Web Server
     log!("Launching Perse!");
@@ -41,8 +43,8 @@ async fn main() -> std::io::Result<()> {
             // setup the Routes
             .leptos_routes(
                 leptos_options.to_owned(),
-                generate_route_list(|| view! { <App/> }),
-                || view! { <App/> },
+                generate_route_list(|| view! { <Controller/> }),
+                || view! { <Controller/> },
             )
             // set the Application State
             .app_data(web::Data::new(leptos_options.to_owned()))
@@ -55,6 +57,28 @@ async fn main() -> std::io::Result<()> {
     .bind(&addr)?
     .run()
     .await
+}
+
+/// # Frontend Entry Point
+#[cfg(all(not(feature = "ssr"), feature = "csr"))]
+pub fn main() {
+    use leptos::*;
+    use perse_controller::*;
+    use wasm_bindgen::prelude::wasm_bindgen;
+
+    // Setup Debugging
+    _ = console_log::init_with_level(tracing::log::Level::Debug);
+    console_error_panic_hook::set_once();
+
+    // Mount Controller
+    leptos::mount_to_body(move || {
+        view! {<Controller/> }
+    });
+}
+
+/// # Standard Entry Point
+#[cfg(not(any(feature = "ssr", feature = "csr")))]
+pub fn main() {
 }
 
 /// # Application State
@@ -73,30 +97,4 @@ async fn favicon(
     Ok(actix_files::NamedFile::open(format!(
         "{}/favicon.ico", &leptos_options.into_inner().site_root
     ))?)
-}
-
-#[cfg(not(any(feature = "ssr", feature = "csr")))]
-pub fn main() {
-    // no client-side main function
-    // unless we want this to work with e.g., Trunk for pure client-side testing
-    // see lib.rs for hydration function instead
-    // see optional feature `csr` instead
-}
-
-#[cfg(all(not(feature = "ssr"), feature = "csr"))]
-pub fn main() {
-    // a client-side main function is required for using `trunk serve`
-    // prefer using `cargo leptos serve` instead
-    // to run: `trunk serve --open --features csr`
-    use leptos::*;
-    use leptos_start::app::*;
-    use wasm_bindgen::prelude::wasm_bindgen;
-
-    console_error_panic_hook::set_once();
-
-    leptos::mount_to_body(move || {
-        // note: for testing it may be preferrable to replace this with a
-        // more specific component, although leptos_router should still work
-        view! {<App/> }
-    });
 }
