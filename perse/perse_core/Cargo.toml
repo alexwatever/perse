@@ -41,7 +41,6 @@ hydrate = [
 ]
 ssr = [
   "dep:perse_controller",
-  "dep:perse_data",
   "perse_data/ssr",
 
   "leptos/ssr",

@@ -2107,13 +2107,13 @@ dependencies = [
 
 [[package]]
 name = "perse_controller"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
- "http",
  "leptos",
  "leptos_actix",
  "leptos_meta",
  "leptos_router",
+ "perse_view",
 ]
 
 [[package]]
@@ -2124,6 +2124,15 @@ dependencies = [
  "dotenv",
  "once_cell",
  "sqlx",
+]
+
+[[package]]
+name = "perse_view"
+version = "0.1.0"
+dependencies = [
+ "http",
+ "leptos",
+ "leptos_actix",
 ]
 
 [[package]]
