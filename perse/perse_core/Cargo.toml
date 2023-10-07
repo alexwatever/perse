@@ -5,7 +5,7 @@
 
 [package]
 name = "perse"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2021"
 authors = ["Alex Watson <hello@perse.dev>"]
 description = "Perse is a site-builder."
@@ -14,24 +14,20 @@ readme = "../README.md"
 license = "MPL-2.0"
 
 [dependencies]
-perse_controller = { workspace = true, default-features = false, optional = true }
+perse_controller = { workspace = true, optional = true }
 perse_data = { workspace = true, optional = true }
 
-leptos = { version = "=0.5.0-rc3", features = ["nightly"] }
-leptos_meta = { version = "=0.5.0-rc3", features = ["nightly"] }
-leptos_actix = { version = "=0.5.0-rc3", optional = true }
-leptos_router = { version = "=0.5.0-rc3", features = ["nightly"] }
+leptos = { workspace = true }
+leptos_meta = { workspace = true }
+leptos_actix = { workspace = true, optional = true }
+leptos_router = { workspace = true }
+http = { workspace = true, optional = true }
+cfg-if = { workspace = true }
 actix-files = { version = "=0.6", optional = true }
 actix-web = { version = "=4", optional = true, features = ["macros"] }
-cfg-if = { workspace = true }
-http = { version = "=0.2", optional = true }
 console_log = { version = "=1" }
 console_error_panic_hook = { version = "=0.1" }
 wasm-bindgen = { version = "=0.2.87" }
-
-dotenv = { version = "=0.15.0", optional = true }
-sqlx = { version = "=0.7.1", optional = true, features = [ "postgres", "runtime-tokio", "tls-native-tls", "macros", "uuid", "chrono", "bigdecimal", "json" ] }
-once_cell = { version = "=1.18.0", optional = true }
 
 [dev-dependencies]
 
@@ -45,7 +41,6 @@ hydrate = [
 ]
 ssr = [
   "dep:perse_controller",
-  "dep:perse_data",
   "perse_data/ssr",
 
   "leptos/ssr",
@@ -54,12 +49,7 @@ ssr = [
   "leptos_actix",
   "dep:actix-files",
   "dep:actix-web",
-
-  "dep:dotenv",
-  "dep:sqlx",
-  "dep:once_cell",
 ]
-
 
 ##########################
 ### Leptos Configuration

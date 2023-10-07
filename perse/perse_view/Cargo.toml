@@ -1,11 +1,11 @@
 
-####################
-# Perse Controller
-####################
+##############
+# Perse View
+##############
 
 [package]
-name = "perse_controller"
-version = "0.1.4"
+name = "perse_view"
+version = "0.1.1"
 edition = "2021"
 authors = ["Alex Watson <hello@perse.dev>"]
 repository = "https://github.com/alexwatever/perse"
@@ -13,27 +13,19 @@ readme = "../README.md"
 license = "MPL-2.0"
 
 [dependencies]
-perse_view = { workspace = true }
-
 leptos = { workspace = true }
-leptos_meta = { workspace = true }
 leptos_actix = { workspace = true, optional = true }
-leptos_router = { workspace = true }
+http = { workspace = true, optional = true }
 
 [features]
 hydrate = [
   "leptos/hydrate",
-  "leptos_meta/hydrate",
-  "leptos_router/hydrate",
 ]
 ssr = [
   "leptos/ssr",
-  "leptos_meta/ssr",
-  "leptos_router/ssr",
   "leptos_actix",
+  "dep:http",
 ]
 csr = [
   "leptos/csr",
-  "leptos_meta/csr",
-  "leptos_router/csr",
 ]

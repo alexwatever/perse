@@ -7,51 +7,61 @@ use leptos_router::*;
 /// ## Default Controller
 #[component]
 pub fn Controller() -> impl IntoView {
+    // Load Metadata
     provide_meta_context();
+    let global_css: View = view! { <Stylesheet id="leptos" href="/pkg/leptos_start.css"/> };
 
+    // Setup Controller
+    if let Some(_routes) = get_user_routes() {
+        // With User Routes
+        init_controller(global_css)
+    } else {
+        // Fallback
+        init_fallback_controller(global_css)
+    }
+}
+
+/// ## Get User Routes
+fn get_user_routes() -> Option<Vec<&'static str>> {
+    let routes: Option<Vec<&'static str>> = None;
+    routes
+}
+
+/// ## Initialise the default Controller
+fn init_controller(global_css: View) -> leptos::Fragment {
     view! {
-        // Set Document Title
+        // Metadata
+        {global_css}
         <Title text="Welcome to Perse"/>
-
-        // Setup CSS with hot-reloading (id="leptos")
-        <Stylesheet id="leptos" href="/pkg/leptos_start.css"/>
-
-        // Setup Routes
+        
+        // Routes
         <Router>
             <main>
                 <Routes>
-                    <Route path="" view=HomePage/>
-                    <Route path="/*any" view=NotFound/>
+                    // Attach System Views
+                    <Route path="/p/create/view" view=perse_view::Create/>
+                    <Route path="/*any" view=perse_view::NotFound/>
                 </Routes>
             </main>
         </Router>
     }
 }
 
-/// ## Home Page
-#[component]
-fn HomePage() -> impl IntoView {
-    // Setup Button
-    let (count, set_count) = create_signal(0);
-    let on_click = move |_| set_count.update(|count| *count += 1);
-
+/// ## Initialise the fallback Controller
+fn init_fallback_controller(global_css: View) -> leptos::Fragment {
     view! {
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
-    }
-}
-
-/// ## Not Found (404)
-#[component]
-fn NotFound() -> impl IntoView {
-    #[cfg(feature = "ssr")]
-    {
-        // Configure Response
-        let resp = expect_context::<leptos_actix::ResponseOptions>();
-        resp.set_status(http::StatusCode::NOT_FOUND);
-    }
-
-    view! {
-        <h1>"Not Found"</h1>
+        // Metadata
+        {global_css}
+        <Title text="Welcome to Perse"/>
+        
+        // Routes
+        <Router>
+            <main>
+                <Routes>
+                    // Attach System Views
+                    <Route path="/*any" view=perse_view::Create/>
+                </Routes>
+            </main>
+        </Router>
     }
 }
