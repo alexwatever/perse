@@ -2088,29 +2088,26 @@ checksum = "9b2a4787296e9989611394c33f193f676704af1686e70b8f8033ab5ba9a35a94"
 
 [[package]]
 name = "perse"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "actix-files",
  "actix-web",
  "cfg-if",
  "console_error_panic_hook",
  "console_log",
- "dotenv",
  "http",
  "leptos",
  "leptos_actix",
  "leptos_meta",
  "leptos_router",
- "once_cell",
  "perse_controller",
  "perse_data",
- "sqlx",
  "wasm-bindgen",
 ]
 
 [[package]]
 name = "perse_controller"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "http",
  "leptos",
@@ -2121,7 +2118,7 @@ dependencies = [
 
 [[package]]
 name = "perse_data"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cfg-if",
  "dotenv",
