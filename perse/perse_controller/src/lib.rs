@@ -9,8 +9,8 @@ use leptos_router::*;
 pub fn Controller() -> impl IntoView {
     // Load Metadata
     provide_meta_context();
-    let global_css: View = view! { <Stylesheet id="leptos" href="/pkg/leptos_start.css"/> };
-
+    let global_css: View = view! { <Stylesheet id="leptos" href="/pkg/perse.css"/> };
+    
     // Setup Controller
     if let Some(_routes) = get_user_routes() {
         // With User Routes

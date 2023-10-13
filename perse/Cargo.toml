@@ -19,10 +19,10 @@ version = "0.1.11"
 ##########################
 ### Perse `dependencies`
 ##########################
-perse = { path = "./perse_core", version = "=0.1.9" }
-perse_controller = { path = "./perse_controller", version = "=0.1.4" }
+perse = { path = "./perse_core", version = "=0.1.10" }
+perse_controller = { path = "./perse_controller", version = "=0.1.5" }
 perse_data = { path = "./perse_data", version = "=0.1.1" }
-perse_view = { path = "./perse_view", version = "=0.1.1" }
+perse_view = { path = "./perse_view", version = "=0.1.2" }
 
 ###########################
 ### Leptos `dependencies`
