@@ -1,5 +1,7 @@
 
 /* Fonts */
+$font-default: 'PT Sans';
+
 @font-face {
   font-family: 'PT Sans';
   font-style: normal;
@@ -34,15 +36,71 @@
 }
 
 
-/* Basics */
-html, body {
-  font-family: 'PT Sans', Helvetica, Arial, sans-serif;
-  color: #5e35b1;
-  font-weight: 400;
+/* Sizing */
+$width-xl: 90rem; // 1440px
+$width-lg: 75rem; // 1200px
+$width-md: 62rem; // 992px
+$width-sm: 48rem; // 768px
+$width-xs: 30rem; // 480px
+@mixin until($width) {
+  @media only screen and (max-width: $width) {
+    @content;
+  }
+}
+@mixin from($width) {
+  @media only screen and (min-width: $width) {
+    @content;
+  }
 }
 
-a {
-  color: #b39ddb;
+
+/* Colors */
+$color-brand-hex: #EB0C6A;
+$color-primary-hex: #5E35B1;
+$color-complementary-hex: #9F0CEB;
+$color-secondary-hex: #b39ddb;
+$color-info-hex: #0D0CEB;
+$color-success-hex: #E80CEB;
+$color-dark-hex: #212529;
+
+$color-brand-rbga: rgba(235,12,106, 1);
+$color-primary-rgba: rgba(94,53,177, 1);
+$color-complementary-rgba: rgba(159,12,235, 1);
+$color-secondary-rbga: rgba(179, 157, 219, 1);
+$color-info-rgba: rgba(13,12,235, 1);
+$color-success-rgba: rgba(232,12,235, 1);
+$color-dark-rgba: rgba(33, 37, 41, 1);
+
+
+/* Borders */
+$border-radius-default: 0.25rem;
+$border-radius-large: 0.5rem;
+$border-color-default: $color-dark-hex;
+$border-color-light: $color-secondary-hex;
+
+
+/* Defaults */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: $font-default, Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  color: $color-dark-hex;
+}
+
+body {
+  display: flex;
+  align-items: flex-start;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $color-dark-hex;
+}
+
+a, a:visited {
+  color: $color-primary-hex;
   text-decoration: none;
   transition: color 2s;
 }
@@ -50,6 +108,45 @@ a {
 a:active,
 a:hover,
 a:focus {
-  color: #5e35b1;
+  color: $color-complementary-hex;
   text-decoration: underline;
+}
+
+button,
+input[type=button],
+input[type=checkbox],
+input[type=checkbox] + label,
+select {
+  cursor: pointer;
+}
+
+body > main {
+  display: flex;
+  flex-direction: column;
+  width: 50rem;
+  margin: 1rem auto;
+
+  nav#navbar {
+    display: flex;
+    place-content: center;
+    margin-bottom: 1rem;
+  
+    > a#brand-link {
+      font-size: 2rem;
+      font-weight: 600;
+      color: $color-brand-hex;
+      text-decoration: none;
+    }
+  }
+
+  article > header > h1:first-of-type {
+    margin-top: 0;
+  }
+
+  #create-view {
+    padding: 1.5rem 1rem 1rem 1rem;
+    background: #fff;
+    border: 1px solid $border-color-default;
+    border-radius: 0.25rem;
+  }
 }
