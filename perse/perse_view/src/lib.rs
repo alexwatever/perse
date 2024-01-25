@@ -79,7 +79,6 @@ pub fn Create() -> impl IntoView {
     }
 }
 
-
 /// ## Not Found (404)
 #[component]
 pub fn NotFound() -> impl IntoView {
