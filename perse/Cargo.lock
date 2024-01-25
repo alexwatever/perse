@@ -609,12 +609,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "186dce98367766de751c42c4f03970fc60fc012296e706ccbb9d5df9b6c1e271"
 
 [[package]]
-name = "common_macros"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3f6d59c71e7dc3af60f0af9db32364d96a16e9310f3f5db2b55ed642162dd35"
-
-[[package]]
 name = "config"
 version = "0.13.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1497,9 +1491,9 @@ dependencies = [
 
 [[package]]
 name = "leptos"
-version = "0.5.1"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2df7b113c4c1f416d306bc4cd52a04dec1c68ed734e4a1de2f70c30b828a6a5d"
+checksum = "e21fa20494987b6c5522a150c4075770fda9085c1ba714856015530e63b7180e"
 dependencies = [
  "cfg-if",
  "leptos_config",
@@ -1509,17 +1503,17 @@ dependencies = [
  "leptos_server",
  "server_fn",
  "tracing",
- "typed-builder 0.16.2",
- "typed-builder-macro 0.16.2",
+ "typed-builder",
+ "typed-builder-macro",
  "wasm-bindgen",
  "web-sys",
 ]
 
 [[package]]
 name = "leptos_actix"
-version = "0.5.1"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "732e955ed2d9b8f4679b30bc76b1d3cefe0e6d4029368f676a729c49df48a622"
+checksum = "fa9319bfdb111ea243db282695a5b72af9ce2da0bb167a1af32f64224d7486e6"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -1545,7 +1539,7 @@ dependencies = [
  "regex",
  "serde",
  "thiserror",
- "typed-builder 0.18.1",
+ "typed-builder",
 ]
 
 [[package]]
@@ -1598,9 +1592,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_integration_utils"
-version = "0.5.1"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f4aea05d1c0ed9e928b63b08cde9dabd8c35e9179e90ce21d6b5df2463ff59d"
+checksum = "74e78ae013aa81184c351cbfad385e0a234fcf25b08fb37e532c0ded515c4d85"
 dependencies = [
  "futures",
  "leptos",
@@ -1635,9 +1629,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_meta"
-version = "0.5.1"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab0df56e3f78629049a969180fd44d4788c48e2633c789ba6a0da8f5d7e1c309"
+checksum = "78fe4e0adc619bbe0e318778a67125f23db34819d4875b4dd3aa053fa4317e17"
 dependencies = [
  "cfg-if",
  "indexmap 2.0.2",
@@ -1677,14 +1671,14 @@ dependencies = [
 
 [[package]]
 name = "leptos_router"
-version = "0.5.1"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a46de957a50e428c95f4fc924251743a5bac3279967fce331157848eb8cf85a2"
+checksum = "b8e11250af4ce7f0c4e3d33789fc876ffad66fb9f791048229040072f40365f9"
 dependencies = [
  "cached",
  "cfg-if",
- "common_macros",
  "gloo-net",
+ "itertools 0.11.0",
  "js-sys",
  "lazy_static",
  "leptos",
@@ -3302,31 +3296,11 @@ checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
 name = "typed-builder"
-version = "0.16.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34085c17941e36627a879208083e25d357243812c30e7d7387c3b954f30ade16"
-dependencies = [
- "typed-builder-macro 0.16.2",
-]
-
-[[package]]
-name = "typed-builder"
 version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "444d8748011b93cb168770e8092458cb0f8854f931ff82fdf6ddfbd72a9c933e"
 dependencies = [
- "typed-builder-macro 0.18.1",
-]
-
-[[package]]
-name = "typed-builder-macro"
-version = "0.16.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f03ca4cb38206e2bef0700092660bb74d696f808514dae47fa1467cbfe26e96e"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.37",
+ "typed-builder-macro",
 ]
 
 [[package]]
