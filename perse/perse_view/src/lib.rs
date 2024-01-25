@@ -5,6 +5,8 @@ use leptos::*;
 /// ## Create View
 #[component]
 pub fn Create() -> impl IntoView {
+    let app_name: &str = "perse";
+
     // Setup Button
     // let (count, set_count) = create_signal(0);
     // let on_click = move |_| set_count.update(|count| *count += 1);
@@ -13,10 +15,10 @@ pub fn Create() -> impl IntoView {
         // <button on:click=on_click>"Click Me: " {count}</button>
 
         <nav id="navbar">
-            <a id="brand-link" href="/" aria-label="Perse"><strong>"Perse"</strong></a>
+            <a id="brand-link" href="/" aria-label=app_name><strong>{ format!("{name}", name = app_name ) }</strong></a>
         </nav>
 
-        <article id="create-view">
+        <article class=move || { format!("{name}-block", name = app_name ) }>
             <header>
                 <h1>"Create View"</h1>
             </header>
