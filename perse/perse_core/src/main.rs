@@ -7,16 +7,17 @@
 async fn main() -> std::io::Result<()> {
     use actix_files::Files;
     use actix_web::*;
-    use leptos::*;
+    use leptos::{*, logging::log};
     use leptos_actix::{generate_route_list, LeptosRoutes};
-    use leptos::logging::log;
+    use leptos_config::{ConfFile, LeptosOptions};
+    use std::net::SocketAddr;
     use perse_data::Database;
     console_error_panic_hook::set_once();
 
     // Get Leptos Configuration
     log!("Configuring Perse...");
-    let conf = get_configuration(None).await.expect("Failed to load the Leptos configuration.");
-    let addr = conf.leptos_options.site_addr;
+    let conf: ConfFile = get_configuration(None).await.expect("Failed to load the Leptos configuration.");
+    let addr: SocketAddr = conf.leptos_options.site_addr;
     
     // Initialising the Database connection
     log!("Initialising the Database connection pool and checking for pending migrations...");
@@ -29,8 +30,8 @@ async fn main() -> std::io::Result<()> {
     // Start Web Server
     log!("Launching Perse!");
     HttpServer::new(move || {
-        let leptos_options = &conf.leptos_options;
-        let site_root = &leptos_options.site_root;
+        let leptos_options: &LeptosOptions = &conf.leptos_options;
+        let site_root: &String = &leptos_options.site_root;
         App::new()
             // setup the server functions
             .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
