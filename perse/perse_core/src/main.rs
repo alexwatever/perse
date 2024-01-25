@@ -34,8 +34,6 @@ async fn main() -> std::io::Result<()> {
         let leptos_options: &LeptosOptions = &conf.leptos_options;
         let site_root: &String = &leptos_options.site_root;
         App::new()
-            // setup the server functions
-            .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
             // serve JS/WASM/CSS from `pkg`
             .service(Files::new("/pkg", format!("{site_root}/pkg")))
             // serve other Assets from the `assets` directory
