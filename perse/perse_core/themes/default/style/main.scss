@@ -1,4 +1,7 @@
 
+/* System */
+$app-name: 'perse';
+
 /* Fonts */
 $font-default: 'PT Sans';
 
@@ -73,10 +76,59 @@ $color-dark-rgba: rgba(33, 37, 41, 1);
 
 
 /* Borders */
-$border-radius-default: 0.25rem;
-$border-radius-large: 0.5rem;
+$border-width-default: 0.3125rem;
+$border-radius-default: 0.5rem;
+$border-radius-large: 1.0rem;
+$border-radius-small: 0.1875rem;
 $border-color-default: $color-dark-hex;
 $border-color-light: $color-secondary-hex;
+
+@mixin border-gradient($width, $radius) {
+  position: relative;
+  background: #fff;
+  background-clip: padding-box; /* !important */
+  border: solid $width transparent; /* !important */
+  border-radius: $radius;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -1;
+    margin: -$width; /* !important */
+    background: linear-gradient(to bottom, $color-brand-hex, $color-primary-hex);
+    border-radius: inherit; /* !important */
+  }
+}
+
+
+/* Backgrounds */
+@mixin background-gradient() {
+  background: $color-brand-hex;
+  background: linear-gradient(180deg, $color-complementary-rgba 7%, $color-primary-rgba 100%);
+}
+
+
+/* Buttons & Forms */
+button,
+input[type=button] {
+  @include background-gradient();
+
+  padding: 0.5rem 1.25rem 0.6rem 1.25rem;
+  border: 0;
+  border-radius: $border-radius-small;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+button,
+input[type=button],
+input[type=checkbox],
+input[type=checkbox] + label,
+select {
+  cursor: pointer;
+}
 
 
 /* Defaults */
@@ -112,14 +164,6 @@ a:focus {
   text-decoration: underline;
 }
 
-button,
-input[type=button],
-input[type=checkbox],
-input[type=checkbox] + label,
-select {
-  cursor: pointer;
-}
-
 body > main {
   display: flex;
   flex-direction: column;
@@ -138,15 +182,16 @@ body > main {
       text-decoration: none;
     }
   }
+}
 
-  article > header > h1:first-of-type {
+
+/* Components */
+.#{$app-name}-block {
+  padding: 1.5rem 1rem 1rem 1rem;
+
+  header > h1:first-of-type {
     margin-top: 0;
   }
 
-  #create-view {
-    padding: 1.5rem 1rem 1rem 1rem;
-    background: #fff;
-    border: 1px solid $border-color-default;
-    border-radius: 0.25rem;
-  }
+  @include border-gradient($border-width-default, $border-radius-default);
 }
