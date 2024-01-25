@@ -27,10 +27,10 @@ perse_view = { path = "./perse_view", version = "=0.1.3" }
 ###########################
 ### Leptos `dependencies`
 ###########################
-leptos = { version = "=0.5.3", features = ["nightly"] }
-leptos_meta = { version = "=0.5.3", features = ["nightly"] }
-leptos_actix = { version = "=0.5.3" }
-leptos_router = { version = "=0.5.3", features = ["nightly"] }
+leptos = { version = "=0.5.7", features = ["nightly"] }
+leptos_meta = { version = "=0.5.7", features = ["nightly"] }
+leptos_actix = { version = "=0.5.7" }
+leptos_router = { version = "=0.5.7", features = ["nightly"] }
 http = { version = "=0.2" }
 cfg-if = { version = "=1" }
 
