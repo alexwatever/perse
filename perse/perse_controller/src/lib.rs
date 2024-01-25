@@ -10,7 +10,7 @@ pub fn Controller() -> impl IntoView {
     // Load Metadata
     provide_meta_context();
     let global_css: View = view! { <Stylesheet id="leptos" href="/pkg/perse.css"/> };
-    
+
     // Setup Controller
     if let Some(_routes) = get_user_routes() {
         // With User Routes
@@ -33,7 +33,7 @@ fn init_controller(global_css: View) -> leptos::Fragment {
         // Metadata
         {global_css}
         <Title text="Welcome to Perse"/>
-        
+
         // Routes
         <Router>
             <main>
@@ -53,7 +53,7 @@ fn init_fallback_controller(global_css: View) -> leptos::Fragment {
         // Metadata
         {global_css}
         <Title text="Welcome to Perse"/>
-        
+
         // Routes
         <Router>
             <main>

@@ -1,4 +1,3 @@
-
 /// # Perse
 
 /// # Backend Entry Point
@@ -7,18 +6,20 @@
 async fn main() -> std::io::Result<()> {
     use actix_files::Files;
     use actix_web::*;
-    use leptos::{*, logging::log};
+    use leptos::{logging::log, *};
     use leptos_actix::{generate_route_list, LeptosRoutes};
     use leptos_config::{ConfFile, LeptosOptions};
-    use std::net::SocketAddr;
     use perse_data::Database;
+    use std::net::SocketAddr;
     console_error_panic_hook::set_once();
 
     // Get Leptos Configuration
     log!("Configuring Perse...");
-    let conf: ConfFile = get_configuration(None).await.expect("Failed to load the Leptos configuration.");
+    let conf: ConfFile = get_configuration(None)
+        .await
+        .expect("Failed to load the Leptos configuration.");
     let addr: SocketAddr = conf.leptos_options.site_addr;
-    
+
     // Initialising the Database connection
     log!("Initialising the Database connection pool and checking for pending migrations...");
     let database = Database::setup().await;
@@ -26,7 +27,7 @@ async fn main() -> std::io::Result<()> {
     // Importing the Routes and Components
     log!("Importing the Routes and Components...");
     use perse_controller::*;
-    
+
     // Start Web Server
     log!("Launching Perse!");
     HttpServer::new(move || {
@@ -53,7 +54,7 @@ async fn main() -> std::io::Result<()> {
                 _database: database,
                 // env: Configuration::setup(),
             }))
-            //.wrap(middleware::Compress::default())
+        //.wrap(middleware::Compress::default())
     })
     .bind(&addr)?
     .run()
@@ -79,8 +80,7 @@ pub fn main() {
 
 /// # Standard Entry Point
 #[cfg(not(any(feature = "ssr", feature = "csr")))]
-pub fn main() {
-}
+pub fn main() {}
 
 /// # Application State
 #[cfg(feature = "ssr")]
@@ -96,6 +96,7 @@ async fn favicon(
     leptos_options: actix_web::web::Data<leptos::LeptosOptions>,
 ) -> actix_web::Result<actix_files::NamedFile> {
     Ok(actix_files::NamedFile::open(format!(
-        "{}/favicon.ico", &leptos_options.into_inner().site_root
+        "{}/favicon.ico",
+        &leptos_options.into_inner().site_root
     ))?)
 }
