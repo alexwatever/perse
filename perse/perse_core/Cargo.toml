@@ -5,7 +5,7 @@
 
 [package]
 name = "perse"
-version = "0.1.12"
+version = "0.1.13"
 edition = "2021"
 authors = ["Alex Watson <hello@perse.dev>"]
 description = "Perse is a site-builder."
@@ -23,10 +23,10 @@ leptos_actix = { workspace = true, optional = true }
 leptos_router = { workspace = true }
 http = { workspace = true, optional = true }
 cfg-if = { workspace = true }
-actix-files = { version = "=0.6", optional = true }
-actix-web = { version = "=4", optional = true, features = ["macros"] }
+actix-files = { version = "=0.6.5", optional = true }
+actix-web = { version = "=4.5.1", optional = true, features = ["macros"] }
 console_log = { version = "=1" }
-console_error_panic_hook = { version = "=0.1" }
+console_error_panic_hook = { version = "=0.1.7" }
 wasm-bindgen = { version = "=0.2.87" }
 
 [dev-dependencies]
