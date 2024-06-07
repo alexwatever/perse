@@ -86,7 +86,7 @@ pub fn NotFound() -> impl IntoView {
     {
         // Configure Response
         let resp = expect_context::<leptos_actix::ResponseOptions>();
-        resp.set_status(http::StatusCode::NOT_FOUND);
+        resp.set_status(StatusCode::NOT_FOUND);
     }
 
     view! {

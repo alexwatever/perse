@@ -14,9 +14,9 @@ license.workspace = true
 edition.workspace = true
 
 [dependencies]
-http = { workspace = true, optional = true }
 leptos = { workspace = true }
 leptos_actix = { workspace = true, optional = true }
+http = { workspace = true, optional = true }
 
 [features]
 hydrate = [
