@@ -36,7 +36,8 @@ perse = { path = "./perse_core", version = "=0.1.14" }
 perse_controller = { path = "./perse_controller", version = "=0.1.6" }
 perse_data = { path = "./perse_data", version = "=0.1.2" }
 perse_view = { path = "./perse_view", version = "=0.1.4" }
-actix-web = { version = "4.6.0", features = ["macros"] }
+actix-web = { version = "4.5.8", features = ["macros"] }
+tracing = "0.1.40"
 
 ###########################
 ### Leptos `dependencies`

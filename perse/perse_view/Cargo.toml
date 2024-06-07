@@ -16,8 +16,11 @@ edition.workspace = true
 [dependencies]
 leptos = { workspace = true }
 leptos_actix = { workspace = true, optional = true }
+leptos_router = { workspace = true }
 actix-web = { workspace = true, optional = true }
 http = { workspace = true, optional = true }
+tracing = { workspace = true, optional = true }
+serde_json = { version = "1.0.117" }
 
 [features]
 hydrate = [
