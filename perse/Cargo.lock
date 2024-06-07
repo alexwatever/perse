@@ -1398,9 +1398,9 @@ dependencies = [
 
 [[package]]
 name = "leptos"
-version = "0.6.11"
+version = "0.6.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20f79fe71c41f5a0506c273f6698a1971bb994ef52a88aeaf4eccb159fcd1e11"
+checksum = "b5fae88b21265cbb847c891d7cf660e284a1282da15459691992be9358e906fb"
 dependencies = [
  "cfg-if",
  "leptos_config",
@@ -1418,9 +1418,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_actix"
-version = "0.6.11"
+version = "0.6.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5be151f99f7fb3a220152d976d23f815da93ae5879cfe8e6fa921455d1ed597c"
+checksum = "4e1c8b5dd701f0354f61997d9efb05c08e7d81077f3b4021a8f2d08ef8738d95"
 dependencies = [
  "actix-http",
  "actix-web",
@@ -1501,9 +1501,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_integration_utils"
-version = "0.6.11"
+version = "0.6.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1f504afe3e2ac30ca15ba9b74d27243e8919e93d1f78bad32e5e8ec23eaca4b"
+checksum = "2ea6256cc3c42b516ee6a7f5885c6e4dcfc66ec84d1ae725dea17e3d22a3803d"
 dependencies = [
  "futures",
  "leptos",
@@ -1538,9 +1538,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_meta"
-version = "0.6.11"
+version = "0.6.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a00900e82a4ca892828db93fce1d4c009480ff3959406e6965aa937c8bab7403"
+checksum = "873ec368535d9971df4848ca21e91aa96fa00a6884258ab8f926db69ea97f547"
 dependencies = [
  "cfg-if",
  "indexmap",
@@ -1580,9 +1580,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_router"
-version = "0.6.11"
+version = "0.6.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7fcc2a95a20c8f41adb39770e65c48ffe33cd9503b83669c54edd9b33ba8aa8"
+checksum = "d66db10225f0caf60b0183935b288791ac3494ca6e1306d415ea97287b6c2db5"
 dependencies = [
  "cached",
  "cfg-if",
@@ -1601,7 +1601,7 @@ dependencies = [
  "send_wrapper",
  "serde",
  "serde_json",
- "serde_qs",
+ "serde_qs 0.13.0",
  "thiserror",
  "tracing",
  "url",
@@ -2485,6 +2485,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_qs"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd34f36fe4c5ba9654417139a9b3a20d2e1de6012ee678ad14d240c22c78d8d6"
+dependencies = [
+ "percent-encoding",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "serde_spanned"
 version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2534,7 +2545,7 @@ dependencies = [
  "send_wrapper",
  "serde",
  "serde_json",
- "serde_qs",
+ "serde_qs 0.12.0",
  "server_fn_macro_default",
  "thiserror",
  "url",
