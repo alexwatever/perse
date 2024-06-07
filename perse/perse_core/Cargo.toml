@@ -24,10 +24,10 @@ leptos_meta = { workspace = true }
 leptos_actix = { workspace = true, optional = true }
 leptos_router = { workspace = true }
 
-actix-files = { version = "=0.6.5", optional = true }
-console_log = { version = "=1" }
-console_error_panic_hook = { version = "=0.1.7" }
-wasm-bindgen = { version = "=0.2.87" }
+actix-files = { version = "0.6.5", optional = true }
+console_log = { version = "1" }
+console_error_panic_hook = { version = "0.1.7" }
+wasm-bindgen = { version = "0.2.92" }
 
 [dev-dependencies]
 
