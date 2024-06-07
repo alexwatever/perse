@@ -2050,7 +2050,7 @@ dependencies = [
 
 [[package]]
 name = "perse_controller"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "leptos",
  "leptos_actix",
@@ -2061,7 +2061,7 @@ dependencies = [
 
 [[package]]
 name = "perse_data"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "cfg-if",
  "dotenv",
