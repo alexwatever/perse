@@ -2073,6 +2073,7 @@ dependencies = [
 name = "perse_view"
 version = "0.1.4"
 dependencies = [
+ "actix-web",
  "http 1.1.0",
  "leptos",
  "leptos_actix",
