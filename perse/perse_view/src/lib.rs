@@ -1,5 +1,6 @@
 use leptos::*;
-use leptos_router::ActionForm;
+use leptos_router::*;
+use serde::{Deserialize, Serialize};
 
 /// # Perse View
 
@@ -7,13 +8,13 @@ use leptos_router::ActionForm;
 #[component]
 pub fn Create() -> impl IntoView {
     // Set the API server function
-    let create_view = create_server_action::<CreateView>();
+    let create_view = Action::<CreateView, _>::server();
 
     // Content
     let app_name: &str = "perse";
     view! {
         <nav id="navbar">
-            <a id="brand-link" href="/" aria-label=app_name><strong>{ format!("{name}", name = app_name ) }</strong></a>
+            <a id="brand-link" href="/" aria-label=app_name><strong>{ app_name.to_string() }</strong></a>
         </nav>
 
         <article class=move || { format!("{name}-block", name = app_name ) }>
@@ -26,23 +27,23 @@ pub fn Create() -> impl IntoView {
                     <div>
                         <div>
                             <label for="title">"Title"</label>
-                            <input id="title" name="title" type="text" placeholder="About Me" />
+                            <input id="title" name="data[title]" type="text" placeholder="About Me" />
                         </div>
                         <div>
                             <label for="content_body">"Body Content"</label>
-                            <textarea id="content_body" name="content_body" placeholder="It was a bright cold day in April..."></textarea>
+                            <textarea id="content_body" name="data[content_body]" placeholder="It was a bright cold day in April..."></textarea>
                         </div>
                         <div>
                             <label for="content_head">"Head Content"</label>
-                            <textarea id="content_head" name="content_head" placeholder=""></textarea>
+                            <textarea id="content_head" name="data[content_head]" placeholder=""></textarea>
                         </div>
                         <div>
                             <label for="description">"Description"</label>
-                            <textarea id="description" name="description" placeholder=""></textarea>
+                            <textarea id="description" name="data[description]" placeholder=""></textarea>
                         </div>
                         <div>
                             <label for="content">"Keywords"</label>
-                            <input id="keywords" name="keywords" type="text" placeholder="" />
+                            <input id="keywords" name="data[keywords]" type="text" placeholder="" />
                         </div>
                         <br /><br />
                     </div>
@@ -50,7 +51,7 @@ pub fn Create() -> impl IntoView {
                     <div>
                         <div>
                             <label for="visibility">"Visibility"</label>
-                            <select id="visibility" name="visibility">
+                            <select id="visibility" name="data[visibility]">
                                 <option value="visibility_public">"Public"</option>
                                 <option value="visibility_hidden">"Hidden"</option>
                                 <option value="visibility_unlisted">"Unlisted"</option>
@@ -58,10 +59,10 @@ pub fn Create() -> impl IntoView {
                         </div>
                         <div>
                             <label for="route">"Route"</label>
-                            <input id="route" name="route" type="text" placeholder="about-me" />
+                            <input id="route" name="data[route]" type="text" placeholder="about-me" />
 
                             <div>
-                                <input id="automatic_title" name="automatic_title" type="checkbox" />
+                                <input id="automatic_title" name="data[automatic_title]" type="checkbox" />
                                 <label for="route-checkbox">"Create from the "<strong>"Title"</strong>" automatically"</label>
                             </div>
                         </div>
@@ -78,8 +79,8 @@ pub fn Create() -> impl IntoView {
 }
 
 /// ### API for "Create View"
-#[server(name = CreateView, prefix = "/api/v1", endpoint = "view/create")]
-pub async fn create_view(
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct CreateViewData {
     title: Option<String>,
     content_body: Option<String>,
     content_head: Option<String>,
@@ -88,9 +89,20 @@ pub async fn create_view(
     visibility: Option<String>,
     route: Option<String>,
     automatic_title: Option<String>,
-) -> Result<String, ServerFnError> {
-    // print results
-    let results: String = format!("{title:?}, {content_body:?}, {content_head:?}, {description:?}, {keywords:?}, {visibility:?}, {route:?}, {automatic_title:?}");
+}
+
+#[server(name = CreateView, prefix = "/api/v1", endpoint = "view/create")]
+pub async fn create_view(data: CreateViewData) -> Result<String, ServerFnError> {
+    // Print the results
+    let results: String = format!("{:?}", data);
+
+    // TODO: Validate the request
+
+    // TODO: Determine the URL path
+
+    // TODO: Insert the new view
+
+    // TODO: Return the new view
 
     Ok(results)
 }
