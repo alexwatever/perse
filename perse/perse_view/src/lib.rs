@@ -1,14 +1,14 @@
 use leptos::*;
 use leptos_router::*;
-use serde::{Deserialize, Serialize};
+use perse_data::views::schema::CreateView;
 
-/// # Perse View
+// # Perse View
 
 /// ## View for "Create View"
 #[component]
 pub fn Create() -> impl IntoView {
     // Set the API server function
-    let create_view = Action::<CreateView, _>::server();
+    let create_view = Action::<CreateViewHandler, _>::server();
 
     // Content
     let app_name: &str = "perse";
@@ -26,6 +26,14 @@ pub fn Create() -> impl IntoView {
                 <ActionForm action=create_view>
                     <div>
                         <div>
+                            <label for="visibility">"Visibility"</label>
+                            <select id="visibility" name="data[visibility]">
+                                <option value="visibility_public">"Public"</option>
+                                <option value="visibility_hidden">"Hidden"</option>
+                                <option value="visibility_unlisted">"Unlisted"</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="title">"Title"</label>
                             <input id="title" name="data[title]" type="text" placeholder="About Me" />
                         </div>
@@ -41,29 +49,17 @@ pub fn Create() -> impl IntoView {
                             <label for="description">"Description"</label>
                             <textarea id="description" name="data[description]" placeholder=""></textarea>
                         </div>
-                        <div>
-                            <label for="content">"Keywords"</label>
-                            <input id="keywords" name="data[keywords]" type="text" placeholder="" />
-                        </div>
                         <br /><br />
                     </div>
 
                     <div>
                         <div>
-                            <label for="visibility">"Visibility"</label>
-                            <select id="visibility" name="data[visibility]">
-                                <option value="visibility_public">"Public"</option>
-                                <option value="visibility_hidden">"Hidden"</option>
-                                <option value="visibility_unlisted">"Unlisted"</option>
-                            </select>
-                        </div>
-                        <div>
                             <label for="route">"Route"</label>
                             <input id="route" name="data[route]" type="text" placeholder="about-me" />
 
                             <div>
-                                <input id="automatic_title" name="data[automatic_title]" type="checkbox" />
-                                <label for="route-checkbox">"Create from the "<strong>"Title"</strong>" automatically"</label>
+                                <input id="automatic_route" name="data[automatic_route]" type="checkbox" />
+                                <label for="route-checkbox">"Create from the "<strong>"Route"</strong>" automatically"</label>
                             </div>
                         </div>
                         <br /><br />
@@ -78,33 +74,25 @@ pub fn Create() -> impl IntoView {
     }
 }
 
-/// ### API for "Create View"
-#[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct CreateViewData {
-    title: Option<String>,
-    content_body: Option<String>,
-    content_head: Option<String>,
-    description: Option<String>,
-    keywords: Option<String>,
-    visibility: Option<String>,
-    route: Option<String>,
-    automatic_title: Option<String>,
-}
+/// ## Create View API
+#[server(name = CreateViewHandler, prefix = "/api/v1", endpoint = "view/create")]
+pub async fn create_view(data: CreateView) -> Result<String, ServerFnError> {
+    use perse_data::{views::schema::View, ApiRequests};
+    use validator::Validate;
 
-#[server(name = CreateView, prefix = "/api/v1", endpoint = "view/create")]
-pub async fn create_view(data: CreateViewData) -> Result<String, ServerFnError> {
-    // Print the results
-    let results: String = format!("{:?}", data);
+    println!("Request: {:?}", data);
 
-    // TODO: Validate the request
+    // Request validation
+    data.validate()?;
 
-    // TODO: Determine the URL path
+    // Custom validation
+    data.is_valid()?;
 
-    // TODO: Insert the new view
+    // Create and return the new view
+    let view: View = View::new(data)?;
+    let view: String = serde_json::to_string(&view)?;
 
-    // TODO: Return the new view
-
-    Ok(results)
+    Ok(view)
 }
 
 /// ## Not Found (404)

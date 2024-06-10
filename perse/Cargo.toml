@@ -32,12 +32,14 @@ unstable_features = "warn"
 ##########################
 ### Perse `dependencies`
 ##########################
-perse = { path = "./perse_core", version = "=0.1.14" }
 perse_controller = { path = "./perse_controller", version = "=0.1.6" }
 perse_data = { path = "./perse_data", version = "=0.1.2" }
+perse_utils = { path = "./perse_utils", version = "=0.1.0" }
 perse_view = { path = "./perse_view", version = "=0.1.4" }
 actix-web = { version = "4.5.8", features = ["macros"] }
-tracing = "0.1.40"
+serde = { version = "1.0.203" }
+tracing = { version = "0.1.40" }
+validator = { version = "0.18.1", features = ["derive"] }
 
 ###########################
 ### Leptos `dependencies`
@@ -46,6 +48,7 @@ leptos = { version = "=0.6.12", features = ["nightly"] }
 leptos_meta = { version = "=0.6.12", features = ["nightly"] }
 leptos_router = { version = "=0.6.12", features = ["nightly"] }
 leptos_actix = { version = "=0.6.12" }
+server_fn = { version = "=0.6.12" }
 # Leptos requires v0.2.87
 wasm-bindgen = { version = "=0.2.87" }
 http = { version = "1.1.0" }
