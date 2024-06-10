@@ -34,8 +34,8 @@ pub fn Create() -> impl IntoView {
                             </select>
                         </div>
                         <div>
-                            <label for="title">"Title"</label>
-                            <input id="title" name="data[title]" type="text" placeholder="About Me" />
+                            <label for="title">"Title"<sup> "*"</sup></label>
+                            <input id="title" name="data[title]" type="text" placeholder="About Me" required />
                         </div>
                         <div>
                             <label for="content_body">"Body Content"</label>

@@ -15,7 +15,7 @@ use validator::Validate;
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct View {
     pub id: u32,
-    pub visibility: bool,
+    pub visibility: ViewVisibilityTypes,
     pub title: String,
     pub content_body: Option<String>,
     pub content_head: Option<String>,
@@ -23,9 +23,20 @@ pub struct View {
     pub route: String,
 }
 
+/// # "ViewVisibilityTypes" model
+///
+/// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
+#[derive(Deserialize, Serialize, Clone, Debug)]
+#[serde(rename_all = "snake_case")]
+pub enum ViewVisibilityTypes {
+    VisibilityPublic,
+    VisibilityUnlisted,
+    VisibilityHidden,
+}
+
 /// # "CreateView" request model
 ///
-/// The order here is important, and must coincide with the field order in the View.
+/// The order, optional status, and type is important, and must match with the field order in the View.
 ///
 /// ## Fields
 ///
@@ -38,7 +49,7 @@ pub struct View {
 /// * `automatic_route` - Whether a route should be created automatically
 #[derive(Deserialize, Serialize, Clone, Validate, Debug)]
 pub struct CreateView {
-    pub visibility: bool,
+    pub visibility: Option<ViewVisibilityTypes>,
     #[validate(length(min = 1, max = 255))]
     pub title: String,
     #[validate(length(min = 1, max = 255))]
@@ -48,6 +59,6 @@ pub struct CreateView {
     #[validate(length(min = 1, max = 255))]
     pub description: Option<String>,
     #[validate(length(min = 1, max = 255))]
-    pub route: String,
-    pub automatic_route: bool,
+    pub route: Option<String>,
+    pub automatic_route: Option<String>,
 }

@@ -3,7 +3,7 @@ use perse_utils::errors::PerseError;
 // # Modules
 use super::{
     super::{ApiRequests, DatabaseModels},
-    schema::{CreateView, View},
+    schema::{CreateView, View, ViewVisibilityTypes},
 };
 
 impl View {
@@ -18,7 +18,7 @@ impl View {
     /// * `Result<View, PerseError>` - The newly created View
     pub fn new(mut data: CreateView) -> Result<View, PerseError> {
         // Determine the URL path
-        data.route = CreateView::determine_url_path(&data)?;
+        data.route = Some(CreateView::determine_url_path(&data)?);
 
         // Insert the new View into the Database
         View::insert_into_db(&data)?;
@@ -60,7 +60,7 @@ impl DatabaseModels for View {
             content_body: Some(String::from("Example content_body")),
             content_head: Some(String::from("Example content_head")),
             description: Some(String::from("Example description")),
-            visibility: true,
+            visibility: ViewVisibilityTypes::VisibilityPublic,
         };
 
         Ok(_view)
@@ -87,7 +87,7 @@ impl CreateView {
     ///
     /// * `Result<String, PerseError>` - The URL path for the new View
     pub fn determine_url_path(data: &Self) -> Result<String, PerseError> {
-        View::generate_new_route(&data.route, data.automatic_route)
+        View::generate_new_route(&data.route.to_owned().unwrap_or_default(), true)
     }
 }
 
