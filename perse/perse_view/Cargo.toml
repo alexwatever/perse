@@ -5,17 +5,29 @@
 
 [package]
 name = "perse_view"
-version = "0.1.3"
-edition = "2021"
-authors = ["Alex Watson <hello@perse.dev>"]
-repository = "https://github.com/alexwatever/perse"
-readme = "../README.md"
-license = "MPL-2.0"
+version = "0.1.4"
+readme.workspace = true
+description.workspace = true
+repository.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [dependencies]
-leptos = { workspace = true }
+perse_data = { workspace = true }
+
+leptos.workspace = true
 leptos_actix = { workspace = true, optional = true }
+leptos_router.workspace = true
+
+actix-web = { workspace = true, optional = true }
 http = { workspace = true, optional = true }
+serde.workspace = true
+serde_json = { version = "1.0.117" }
+tracing = { workspace = true, optional = true }
+validator.workspace = true
+# set to v0.3.64 to avoid conflicts
+web-sys = { version = "=0.3.64" }
 
 [features]
 hydrate = [
@@ -24,6 +36,7 @@ hydrate = [
 ssr = [
   "leptos/ssr",
   "leptos_actix",
+  "dep:actix-web",
   "dep:http",
 ]
 csr = [

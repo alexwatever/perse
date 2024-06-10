@@ -1,0 +1,20 @@
+
+####################
+# Perse Utils
+####################
+
+[package]
+name = "perse_utils"
+version = "0.1.0"
+readme.workspace = true
+description.workspace = true
+repository.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[dependencies]
+server_fn.workspace = true
+tracing.workspace = true
+
+[features]

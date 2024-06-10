@@ -1,3 +1,9 @@
+use perse_utils::errors::PerseError;
+use std::marker;
+
+// # Modules
+pub mod views;
+
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         /// # Perse Data
@@ -58,4 +64,36 @@ cfg_if::cfg_if! {
             }
         }
     }
+}
+
+/// # Trait for API requests
+pub trait ApiRequests {
+    /// # Validate an incoming API request
+    ///
+    /// ## Fields
+    ///
+    /// * `self` - The API request payload to validate
+    fn is_valid(&self) -> Result<bool, PerseError>;
+}
+
+/// # Trait for Database models
+pub trait DatabaseModels {
+    /// The payload schema to create a new database entity
+    type CreateRequest;
+
+    /// # Insert database model into the Database
+    ///
+    /// ## Fields
+    ///
+    /// * `self` - The database model to insert
+    fn insert_into_db(new_record: &Self::CreateRequest) -> Result<(), PerseError>;
+
+    /// # Retrieve a database model from the Database
+    ///
+    /// ## Fields
+    ///
+    /// * `self` - The database model to retrieve
+    fn retrieve_from_db(id: u32) -> Result<Self, PerseError>
+    where
+        Self: marker::Sized;
 }
