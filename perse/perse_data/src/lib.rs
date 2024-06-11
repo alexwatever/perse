@@ -23,7 +23,7 @@ cfg_if::cfg_if! {
 
                 // Create a new PostgreSQL database connection pool
                 let database: DatabasePool = Self::create_connection_pool(
-                        env::var("PERSE_DATABASE_URL")
+                        &env::var("PERSE_DATABASE_URL")
                             .expect("The `PERSE_DATABASE_URL` environment variable is not available."),
                         env::var("PERSE_DATABASE_MAX_CONNECTIONS")
                             .expect("The `PERSE_DATABASE_MAX_CONNECTIONS` environment variable is not available.")
@@ -54,11 +54,11 @@ cfg_if::cfg_if! {
             }
 
             // Create the initial database connection pool
-            async fn create_connection_pool(database_url: String, max_connections: u32) -> DatabasePool {
+            async fn create_connection_pool(database_url: &str, max_connections: u32) -> DatabasePool {
                 // Setup a new PostgreSQL database connection pool with provided configuration
                 sqlx::postgres::PgPoolOptions::new()
                     .max_connections(max_connections)
-                    .connect(&database_url)
+                    .connect(database_url)
                     .await
                     .expect("Failed to create a database connection pool.")
             }

@@ -48,11 +48,13 @@ impl DatabaseModels for View {
 
     // Insert a new View into the Database
     fn insert_into_db(_new_record: &CreateView) -> Result<(), PerseError> {
+        // TODO:
         Ok(())
     }
 
     // Get the requested View from the Database
     fn retrieve_from_db(_view_id: u32) -> Result<Self, PerseError> {
+        // TODO:
         let _view = Self {
             id: 1,
             route: String::from("Example route"),
@@ -87,6 +89,7 @@ impl CreateView {
     ///
     /// * `Result<String, PerseError>` - The URL path for the new View
     pub fn determine_url_path(data: &Self) -> Result<String, PerseError> {
+        // TODO:
         View::generate_new_route(&data.route.to_owned().unwrap_or_default(), true)
     }
 }
@@ -94,6 +97,7 @@ impl CreateView {
 impl ApiRequests for CreateView {
     /// # Validate the incoming `CreateView` API request
     fn is_valid(&self) -> Result<bool, PerseError> {
+        // TODO:
         Ok(true)
     }
 }
