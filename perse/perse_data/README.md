@@ -14,7 +14,7 @@ cargo install sqlx-cli
 
 ### Create and run migrations
 
-Read more about migrations [here](https://github.com/launchbadge/sqlx/blob/main/sqlx-cli/README.md).
+The below is from from SQLx, [read more about SQLx migrations here](https://github.com/launchbadge/sqlx/blob/main/sqlx-cli/README.md).
 
 ```bash
 sqlx migrate add <name>
