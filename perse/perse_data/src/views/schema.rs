@@ -1,6 +1,9 @@
+use parse_display::{Display, FromStr};
+use perse_utils::errors::PerseError;
 use serde::{Deserialize, Serialize};
-// #[cfg(feature = "ssr")]
-// use sqlx::{prelude::Type, FromRow};
+#[cfg(feature = "ssr")]
+use sqlx::{FromRow, Type};
+use uuid::Uuid;
 use validator::Validate;
 
 /// # "View" model
@@ -14,10 +17,10 @@ use validator::Validate;
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
-#[derive(Deserialize, Serialize, Clone, Debug)]
-// #[derive(Deserialize, Serialize, FromRow, Clone, Debug)]
+#[cfg(feature = "ssr")]
+#[derive(Deserialize, Serialize, Clone, FromRow, Debug)]
 pub struct View {
-    pub id: u32,
+    pub id: Uuid,
     pub visibility: ViewVisibilityTypes,
     pub title: String,
     pub content_body: Option<String>,
@@ -29,9 +32,10 @@ pub struct View {
 /// # "ViewVisibilityTypes" model
 ///
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
-#[derive(Deserialize, Serialize, Clone, Debug)]
-// #[derive(Deserialize, Serialize, Type, Clone, Debug)]
+#[cfg(feature = "ssr")]
+#[derive(Deserialize, Serialize, Display, FromStr, Type, Clone, Debug)]
 #[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
 pub enum ViewVisibilityTypes {
     VisibilityPublic,
     VisibilityUnlisted,
@@ -44,7 +48,30 @@ pub enum ViewVisibilityTypes {
 ///
 /// ## Fields
 ///
-/// * `visibility` - Visibility of the View
+/// * `visibility` - Visibility of the View, as enum `ViewVisibilityTypes`
+/// * `title` - Title of the View
+/// * `content_body` - Body content
+/// * `content_head` - Head Content
+/// * `description` - Description of the View
+/// * `route` - Route of the View
+/// * `automatic_route` - Whether a route should be created automatically
+#[cfg(feature = "ssr")]
+#[derive(Deserialize, Clone, Debug)]
+pub struct CreateView {
+    pub visibility: ViewVisibilityTypes,
+    pub title: String,
+    pub content_body: Option<String>,
+    pub content_head: Option<String>,
+    pub description: Option<String>,
+    pub route: Option<String>,
+    pub automatic_route: Option<String>,
+}
+
+/// # "CreateViewRequest" request model
+///
+/// ## Fields
+///
+/// * `visibility` - Visibility of the View, as a String
 /// * `title` - Title of the View
 /// * `content_body` - Body content
 /// * `content_head` - Head Content
@@ -52,8 +79,8 @@ pub enum ViewVisibilityTypes {
 /// * `route` - Route of the View
 /// * `automatic_route` - Whether a route should be created automatically
 #[derive(Deserialize, Serialize, Clone, Validate, Debug)]
-pub struct CreateView {
-    pub visibility: ViewVisibilityTypes,
+pub struct CreateViewRequest {
+    pub visibility: String,
     #[validate(length(min = 1, max = 255))]
     pub title: String,
     #[validate(length(min = 1, max = 255))]
@@ -65,4 +92,24 @@ pub struct CreateView {
     #[validate(length(min = 1, max = 255))]
     pub route: Option<String>,
     pub automatic_route: Option<String>,
+}
+
+#[cfg(feature = "ssr")]
+impl TryFrom<CreateViewRequest> for CreateView {
+    type Error = PerseError;
+
+    /// # Try to cast from `CreateViewRequest` to `CreateView`
+    fn try_from(value: CreateViewRequest) -> Result<Self, PerseError> {
+        let visibility: ViewVisibilityTypes = value.visibility.parse()?;
+
+        Ok(Self {
+            visibility,
+            title: value.title,
+            content_body: value.content_body,
+            content_head: value.content_head,
+            description: value.description,
+            route: value.route,
+            automatic_route: value.automatic_route,
+        })
+    }
 }

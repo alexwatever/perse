@@ -1,6 +1,6 @@
 use leptos::*;
 use leptos_router::*;
-use perse_data::views::schema::CreateView;
+use perse_data::views::schema::CreateViewRequest;
 
 // # Perse View
 
@@ -76,17 +76,10 @@ pub fn Create() -> impl IntoView {
 
 /// ## Create View API
 #[server(name = CreateViewHandler, prefix = "/api/v1", endpoint = "view/create")]
-pub async fn create_view(data: CreateView) -> Result<String, ServerFnError> {
-    use perse_data::{views::schema::View, ApiRequests};
-    use validator::Validate;
+pub async fn create_view(data: CreateViewRequest) -> Result<String, ServerFnError> {
+    use perse_data::views::schema::View;
 
     println!("Request: {:?}", data);
-
-    // Request validation
-    data.validate()?;
-
-    // Custom validation
-    data.is_valid()?;
 
     // Create and return the new view
     let view: View = View::new(data).await?;

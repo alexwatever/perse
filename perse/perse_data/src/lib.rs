@@ -106,7 +106,7 @@ cfg_if::cfg_if! {
             fn get_by_id(
                 conn: &PgPool,
                 id: &str,
-            ) -> impl std::future::Future<Output = Result<Option<Self>, PerseError>> + Send
+            ) -> impl std::future::Future<Output = Result<Self, PerseError>> + Send
             where
                 Self: marker::Sized;
         }

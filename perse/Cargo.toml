@@ -37,6 +37,7 @@ perse_data = { path = "./perse_data", version = "=0.1.2" }
 perse_utils = { path = "./perse_utils", version = "=0.1.0" }
 perse_view = { path = "./perse_view", version = "=0.1.4" }
 actix-web = { version = "4.5.8", features = ["macros"] }
+parse-display = { version = "0.9.1" }
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = { version = "1.0.117" }
 # version 0.7.4 and above of sqlx gives dependency errors or conflicts

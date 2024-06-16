@@ -1,3 +1,4 @@
+use parse_display::ParseError;
 use server_fn::ServerFnError;
 use tracing::error;
 
@@ -40,8 +41,8 @@ impl PerseError {
     }
 }
 
-// Convert our `PerseError` into the Leptos `ServerFnError`
 impl From<PerseError> for ServerFnError {
+    // Convert our `PerseError` into the Leptos `ServerFnError`
     fn from(input: PerseError) -> Self {
         // Determine the best error type
         let output: ServerFnError = match input.error_type {
@@ -53,11 +54,18 @@ impl From<PerseError> for ServerFnError {
     }
 }
 
+impl From<ParseError> for PerseError {
+    // Convert a `ParseError` into a `PerseError`
+    fn from(input: ParseError) -> Self {
+        Self::new(ErrorTypes::Conflict, input.to_string())
+    }
+}
+
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use sqlx::Error as SqlxError;
 
-        // Convert from an sqlx `Error` to `PerseError`
+        // Convert a sqlx `Error` into a `PerseError`
         impl From<SqlxError> for PerseError {
             fn from(input: SqlxError) -> Self {
                 Self::new(ErrorTypes::InternalError, format!("SQLx error: {}", input))

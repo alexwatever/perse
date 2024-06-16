@@ -2,12 +2,12 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use perse_utils::errors::{PerseError, ErrorTypes};
         use sqlx::{query_as, types::Uuid, PgPool};
+        use validator::Validate;
 
         // # Modules
         use super::{
             super::{ApiRequests, Database, DatabaseModels},
-            // super::{ApiRequests, Database, DatabaseModels},
-            schema::{CreateView, View, ViewVisibilityTypes},
+            schema::{CreateView, CreateViewRequest, View, ViewVisibilityTypes},
         };
 
         impl View {
@@ -20,7 +20,15 @@ cfg_if::cfg_if! {
             /// ## Returns
             ///
             /// * `Result<View, PerseError>` - The newly created View
-            pub async fn new(mut data: CreateView) -> Result<View, PerseError> {
+            pub async fn new(data: CreateViewRequest) -> Result<View, PerseError> {
+                // Request validation
+                data.validate()
+                    .map_err(|err| PerseError::new(ErrorTypes::Conflict, format!("Failed to validate request: {err}")))?;
+
+                // Custom validation
+                let mut data: CreateView = data.try_into()?;
+                data.is_valid()?;
+
                 // Get a database connection
                 let conn = Database::get_connection_pool()?;
 
@@ -70,7 +78,7 @@ cfg_if::cfg_if! {
                 // .fetch_one(conn)
                 // .await?;
                 let query = View {
-                    id: 1_u32,
+                    id: Uuid::new_v4(),
                     visibility: ViewVisibilityTypes::VisibilityPublic,
                     title: "".to_string(),
                     content_body: Some("".to_string()),
@@ -83,32 +91,31 @@ cfg_if::cfg_if! {
             }
 
             /// Retrieve a `View` record from the database by ID\
-            async fn get_by_id(conn: &PgPool, id: &str) -> Result<Option<Self>, PerseError> {
+            async fn get_by_id(conn: &PgPool, id: &str) -> Result<Self, PerseError> {
                 // Parse the ID into a UUID
                 let id: Uuid = Uuid::parse_str(id)
                     .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to parse the ID as a UUID: {err}")))?;
 
                 // Retrieve the View record from the database
-                // let query = query_as!(
-                //     View,
-                //     r#"
-                //     SELECT id, visibility as "visibility: _", title, content_body, content_head, description, route
-                //     FROM views
-                //     WHERE id = $1
-                //     "#,
-                //     id
-                // )
-                // .fetch_optional(conn)
-                // .await?;
-                let query = Some(View {
-                    id: 1_u32,
-                    visibility: ViewVisibilityTypes::VisibilityPublic,
-                    title: "".to_string(),
-                    content_body: Some("".to_string()),
-                    content_head: Some("".to_string()),
-                    description: Some("".to_string()),
-                    route: "".to_string(),
-                });
+                let query: Self = query_as!(
+                    Self,
+                    "
+                    SELECT 
+                    id,
+                    visibility AS \"visibility: ViewVisibilityTypes\",
+                    title,
+                    content_body,
+                    content_head,
+                    description,
+                    route
+                    FROM views
+                    WHERE id = $1
+                    ",
+                    id,
+                )
+                .fetch_one(conn)
+                .await
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Unable to retrieve View #{id}: {err}")))?;
 
                 Ok(query)
             }
@@ -119,7 +126,7 @@ cfg_if::cfg_if! {
             ///
             /// ## Fields
             ///
-            /// * `data` - The `CreateView` data to generate the URL path from
+            /// * `data` - The `CreateViewRequest` data to generate the URL path from
             ///
             /// ## Returns
             ///
