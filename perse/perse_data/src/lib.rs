@@ -1,15 +1,19 @@
-use perse_utils::errors::PerseError;
-use std::marker;
-
 // # Modules
 pub mod views;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
+        use perse_utils::errors::PerseError;
+        use sqlx::PgPool;
+        use std::marker;
+        use once_cell::sync::OnceCell;
+        use perse_utils::errors::ErrorTypes;
+        use std::env;
+        // use views::schema::Database;
+
         /// # Perse Data
 
         /// # Database Pool
-        use once_cell::sync::OnceCell;
         pub type DatabasePool = sqlx::Pool<sqlx::Postgres>;
         pub static DATABASE_POOL: OnceCell<DatabasePool> = OnceCell::new();
 
@@ -19,10 +23,9 @@ cfg_if::cfg_if! {
             // ## Initialise and return a reference to the database connection pool
             pub async fn setup() -> &'static DatabasePool {
                 dotenv::dotenv().ok();
-                use std::env;
 
                 // Create a new PostgreSQL database connection pool
-                let database: DatabasePool = Self::create_connection_pool(
+                let database: DatabasePool = Database::create_connection_pool(
                         &env::var("PERSE_DATABASE_URL")
                             .expect("The `PERSE_DATABASE_URL` environment variable is not available."),
                         env::var("PERSE_DATABASE_MAX_CONNECTIONS")
@@ -33,10 +36,11 @@ cfg_if::cfg_if! {
                     .await;
 
                 // Check and run Database Migrations
-                sqlx::migrate!()
-                    .run(&database)
-                    .await
-                    .expect("Unable to run the database migrations.");
+                // TODO: This fails with a `VersionMissing` error, they won't be run automatically for the time being
+                // sqlx::migrate!()
+                //     .run(&database)
+                //     .await
+                //     .expect("Unable to run the database migrations.");
 
                 // Allocate the Database connection pool reference
                 DATABASE_POOL
@@ -44,13 +48,16 @@ cfg_if::cfg_if! {
                     .expect("The database connection pool could not be created.");
 
                 // Retrieve and return the Database connection pool
-                Self::get_connection_pool()
+                DATABASE_POOL
+                    .get()
                     .expect("The database connection pool could not be retrieved.")
             }
 
             // Get the existing database pool
-            pub fn get_connection_pool() -> Option<&'static DatabasePool> {
-                DATABASE_POOL.get()
+            pub fn get_connection_pool() -> Result<&'static DatabasePool, PerseError> {
+                DATABASE_POOL
+                    .get()
+                    .ok_or(PerseError::new(ErrorTypes::InternalError, "The database connection pool could not be retrieved."))
             }
 
             // Create the initial database connection pool
@@ -63,37 +70,45 @@ cfg_if::cfg_if! {
                     .expect("Failed to create a database connection pool.")
             }
         }
+
+        /// # Trait for API requests
+        pub trait ApiRequests {
+            /// # Validate an incoming API request
+            ///
+            /// ## Fields
+            ///
+            /// * `self` - The API request payload to validate
+            fn is_valid(&self) -> Result<bool, PerseError>;
+        }
+
+        /// # Trait for Database models
+        pub trait DatabaseModels {
+            /// The payload schema to create a new database entity
+            type CreateRequest;
+
+            /// # Insert database model into the Database
+            ///
+            /// ## Fields
+            ///
+            /// * `self` - The database model to insert
+            fn create(
+                conn: &PgPool,
+                new_record: &Self::CreateRequest,
+            ) -> impl std::future::Future<Output = Result<Self, PerseError>> + Send
+            where
+                Self: marker::Sized;
+
+            /// # Retrieve a database model from the Database
+            ///
+            /// ## Fields
+            ///
+            /// * `self` - The database model to retrieve
+            fn get_by_id(
+                conn: &PgPool,
+                id: &str,
+            ) -> impl std::future::Future<Output = Result<Option<Self>, PerseError>> + Send
+            where
+                Self: marker::Sized;
+        }
     }
-}
-
-/// # Trait for API requests
-pub trait ApiRequests {
-    /// # Validate an incoming API request
-    ///
-    /// ## Fields
-    ///
-    /// * `self` - The API request payload to validate
-    fn is_valid(&self) -> Result<bool, PerseError>;
-}
-
-/// # Trait for Database models
-pub trait DatabaseModels {
-    /// The payload schema to create a new database entity
-    type CreateRequest;
-
-    /// # Insert database model into the Database
-    ///
-    /// ## Fields
-    ///
-    /// * `self` - The database model to insert
-    fn insert_into_db(new_record: &Self::CreateRequest) -> Result<(), PerseError>;
-
-    /// # Retrieve a database model from the Database
-    ///
-    /// ## Fields
-    ///
-    /// * `self` - The database model to retrieve
-    fn retrieve_from_db(id: u32) -> Result<Self, PerseError>
-    where
-        Self: marker::Sized;
 }

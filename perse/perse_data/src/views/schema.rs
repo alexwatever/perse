@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+// #[cfg(feature = "ssr")]
+// use sqlx::{prelude::Type, FromRow};
 use validator::Validate;
 
 /// # "View" model
@@ -6,13 +8,14 @@ use validator::Validate;
 /// ## Fields
 ///
 /// * `id` - ID of the View
-/// * `route` - Route of the View
+/// * `visibility` - Visibility of the View
 /// * `title` - Title of the View
 /// * `content_body` - Body content
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
-/// * `visibility` - Visibility of the View
+/// * `route` - Route of the View
 #[derive(Deserialize, Serialize, Clone, Debug)]
+// #[derive(Deserialize, Serialize, FromRow, Clone, Debug)]
 pub struct View {
     pub id: u32,
     pub visibility: ViewVisibilityTypes,
@@ -27,6 +30,7 @@ pub struct View {
 ///
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
 #[derive(Deserialize, Serialize, Clone, Debug)]
+// #[derive(Deserialize, Serialize, Type, Clone, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum ViewVisibilityTypes {
     VisibilityPublic,
@@ -49,7 +53,7 @@ pub enum ViewVisibilityTypes {
 /// * `automatic_route` - Whether a route should be created automatically
 #[derive(Deserialize, Serialize, Clone, Validate, Debug)]
 pub struct CreateView {
-    pub visibility: Option<ViewVisibilityTypes>,
+    pub visibility: ViewVisibilityTypes,
     #[validate(length(min = 1, max = 255))]
     pub title: String,
     #[validate(length(min = 1, max = 255))]

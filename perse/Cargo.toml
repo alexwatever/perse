@@ -37,8 +37,13 @@ perse_data = { path = "./perse_data", version = "=0.1.2" }
 perse_utils = { path = "./perse_utils", version = "=0.1.0" }
 perse_view = { path = "./perse_view", version = "=0.1.4" }
 actix-web = { version = "4.5.8", features = ["macros"] }
-serde = { version = "1.0.203" }
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = { version = "1.0.117" }
+# version 0.7.4 and above of sqlx gives dependency errors or conflicts
+sqlx = { version = "=0.7.3", features = [ "postgres", "runtime-tokio", "macros", "json", "uuid", "chrono", "tls-native-tls" ] }
+tokio = { version = "1.37.0", features = ["full"] }
 tracing = { version = "0.1.40" }
+uuid = { version = "1.8.0", features = ["serde", "v4"] }
 validator = { version = "0.18.1", features = ["derive"] }
 
 ###########################

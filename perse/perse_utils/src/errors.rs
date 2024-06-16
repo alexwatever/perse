@@ -2,6 +2,7 @@ use server_fn::ServerFnError;
 use tracing::error;
 
 // Define the custom Perse error
+#[derive(Debug)]
 pub struct PerseError {
     error_type: ErrorTypes,
     message: String,
@@ -49,5 +50,18 @@ impl From<PerseError> for ServerFnError {
         };
 
         output
+    }
+}
+
+cfg_if::cfg_if! {
+    if #[cfg(feature = "ssr")] {
+        use sqlx::Error as SqlxError;
+
+        // Convert from an sqlx `Error` to `PerseError`
+        impl From<SqlxError> for PerseError {
+            fn from(input: SqlxError) -> Self {
+                Self::new(ErrorTypes::InternalError, format!("SQLx error: {}", input))
+            }
+        }
     }
 }

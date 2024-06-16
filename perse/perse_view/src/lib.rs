@@ -89,7 +89,7 @@ pub async fn create_view(data: CreateView) -> Result<String, ServerFnError> {
     data.is_valid()?;
 
     // Create and return the new view
-    let view: View = View::new(data)?;
+    let view: View = View::new(data).await?;
     let view: String = serde_json::to_string(&view)?;
 
     Ok(view)

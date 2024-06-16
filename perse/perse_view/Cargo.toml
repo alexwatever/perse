@@ -23,7 +23,7 @@ leptos_router.workspace = true
 actix-web = { workspace = true, optional = true }
 http = { workspace = true, optional = true }
 serde.workspace = true
-serde_json = { version = "1.0.117" }
+serde_json.workspace = true
 tracing = { workspace = true, optional = true }
 validator.workspace = true
 # set to v0.3.64 to avoid conflicts
