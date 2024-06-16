@@ -61,31 +61,23 @@ cfg_if::cfg_if! {
             /// Create and return a new `View` record
             async fn create(conn: &PgPool, view: &CreateView) -> Result<Self, PerseError> {
                 // Create and retrieve
-                // let query: View = query_as!(
-                //     View,
-                //     r#"
-                //     INSERT INTO views (visibility, title, content_body, content_head, description, route)
-                //     VALUES ($1, $2, $3, $4, $5, $6)
-                //     RETURNING id, visibility as "visibility: _", title, content_body, content_head, description, route
-                //     "#,
-                //     view.visibility.clone() as ViewVisibilityTypes,
-                //     view.title,
-                //     view.content_body,
-                //     view.content_head,
-                //     view.description,
-                //     view.route,
-                // )
-                // .fetch_one(conn)
-                // .await?;
-                let query = View {
-                    id: Uuid::new_v4(),
-                    visibility: ViewVisibilityTypes::VisibilityPublic,
-                    title: "".to_string(),
-                    content_body: Some("".to_string()),
-                    content_head: Some("".to_string()),
-                    description: Some("".to_string()),
-                    route: "".to_string(),
-                };
+                let query: View = query_as!(
+                    View,
+                    "
+                    INSERT INTO views (visibility, title, content_body, content_head, description, route)
+                    VALUES ($1, $2, $3, $4, $5, $6)
+                    RETURNING id, visibility AS \"visibility: ViewVisibilityTypes\", title, content_body, content_head, description, route
+                    ",
+                    view.visibility.clone() as ViewVisibilityTypes,
+                    view.title,
+                    view.content_body,
+                    view.content_head,
+                    view.description,
+                    view.route,
+                )
+                .fetch_one(conn)
+                .await
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to create View #{view:?}: {err}")))?;
 
                 Ok(query)
             }

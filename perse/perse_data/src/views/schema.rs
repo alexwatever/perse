@@ -1,9 +1,10 @@
+#[cfg(feature = "ssr")]
 use parse_display::{Display, FromStr};
+#[cfg(feature = "ssr")]
 use perse_utils::errors::PerseError;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use sqlx::{FromRow, Type};
-use uuid::Uuid;
 use validator::Validate;
 
 /// # "View" model
@@ -20,7 +21,7 @@ use validator::Validate;
 #[cfg(feature = "ssr")]
 #[derive(Deserialize, Serialize, Clone, FromRow, Debug)]
 pub struct View {
-    pub id: Uuid,
+    pub id: uuid::Uuid,
     pub visibility: ViewVisibilityTypes,
     pub title: String,
     pub content_body: Option<String>,
