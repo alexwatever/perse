@@ -1,5 +1,5 @@
 #[cfg(feature = "ssr")]
-use parse_display::{Display, FromStr};
+use parse_display::FromStr;
 use perse_utils::errors::ErrorTypes;
 #[cfg(feature = "ssr")]
 use perse_utils::errors::PerseError;
@@ -35,10 +35,9 @@ pub struct View {
 ///
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
 #[cfg(feature = "ssr")]
-#[derive(Deserialize, Serialize, Display, FromStr, Type, Clone, Debug)]
+#[derive(Deserialize, Serialize, FromStr, Type, Clone, Debug)]
 #[sqlx(type_name = "visibility_types", rename_all = "PascalCase")]
 #[serde(rename_all = "PascalCase")]
-#[display(style = "CamelCase")]
 pub enum ViewVisibilityTypes {
     VisibilityPublic,
     VisibilityUnlisted,
