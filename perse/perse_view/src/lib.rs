@@ -79,12 +79,9 @@ pub fn Create() -> impl IntoView {
 pub async fn create_view(data: CreateViewRequest) -> Result<String, ServerFnError> {
     use perse_data::views::schema::View;
 
-    println!("Request: {:?}", data);
-
     // Create and return the new view
     let view: View = View::new(data).await?;
     let view: String = serde_json::to_string(&view)?;
-    println!("Result: {:?}", view);
 
     Ok(view)
 }

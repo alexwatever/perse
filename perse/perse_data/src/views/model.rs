@@ -60,10 +60,7 @@ cfg_if::cfg_if! {
 
             /// Create and return a new `View` record
             async fn create(conn: &PgPool, view: &CreateView) -> Result<Self, PerseError> {
-                println!("View: {view:#?}");
-
                 // Create and retrieve
-                // error returned from database: type "viewvisibilitytypes" does not exist
                 let visib = view.visibility.clone();
                 let query: View = query_as!(
                     View,
