@@ -28,9 +28,9 @@ pub fn Create() -> impl IntoView {
                         <div>
                             <label for="visibility">"Visibility"</label>
                             <select id="visibility" name="data[visibility]">
-                                <option value="visibility_public">"Public"</option>
-                                <option value="visibility_hidden">"Hidden"</option>
-                                <option value="visibility_unlisted">"Unlisted"</option>
+                                <option value="VisibilityPublic">"Public"</option>
+                                <option value="VisibilityHidden">"Hidden"</option>
+                                <option value="VisibilityUnlisted">"Unlisted"</option>
                             </select>
                         </div>
                         <div>
@@ -84,6 +84,7 @@ pub async fn create_view(data: CreateViewRequest) -> Result<String, ServerFnErro
     // Create and return the new view
     let view: View = View::new(data).await?;
     let view: String = serde_json::to_string(&view)?;
+    println!("Result: {:?}", view);
 
     Ok(view)
 }

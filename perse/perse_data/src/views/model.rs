@@ -33,7 +33,7 @@ cfg_if::cfg_if! {
                 let conn = Database::get_connection_pool()?;
 
                 // Determine the URL path
-                data.route = Some(CreateView::determine_url_path(&data)?);
+                data.route = CreateView::determine_url_path(&data)?;
 
                 // Insert and retrieve the new View
                 let view = View::create(conn, &data).await?;
@@ -60,7 +60,11 @@ cfg_if::cfg_if! {
 
             /// Create and return a new `View` record
             async fn create(conn: &PgPool, view: &CreateView) -> Result<Self, PerseError> {
+                println!("View: {view:#?}");
+
                 // Create and retrieve
+                // error returned from database: type "viewvisibilitytypes" does not exist
+                let visib = view.visibility.clone();
                 let query: View = query_as!(
                     View,
                     "
@@ -68,7 +72,7 @@ cfg_if::cfg_if! {
                     VALUES ($1, $2, $3, $4, $5, $6)
                     RETURNING id, visibility AS \"visibility: ViewVisibilityTypes\", title, content_body, content_head, description, route
                     ",
-                    view.visibility.clone() as ViewVisibilityTypes,
+                    visib as ViewVisibilityTypes,
                     view.title,
                     view.content_body,
                     view.content_head,
@@ -125,7 +129,7 @@ cfg_if::cfg_if! {
             /// * `Result<String, PerseError>` - The URL path for the new View
             pub fn determine_url_path(data: &Self) -> Result<String, PerseError> {
                 // TODO:
-                View::generate_new_route(&data.route.to_owned().unwrap_or_default(), true)
+                View::generate_new_route(&data.route.to_owned(), true)
             }
         }
 

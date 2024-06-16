@@ -1,5 +1,6 @@
 #[cfg(feature = "ssr")]
 use parse_display::{Display, FromStr};
+use perse_utils::errors::ErrorTypes;
 #[cfg(feature = "ssr")]
 use perse_utils::errors::PerseError;
 use serde::{Deserialize, Serialize};
@@ -35,8 +36,9 @@ pub struct View {
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
 #[cfg(feature = "ssr")]
 #[derive(Deserialize, Serialize, Display, FromStr, Type, Clone, Debug)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
+#[sqlx(type_name = "visibility_types", rename_all = "PascalCase")]
+#[serde(rename_all = "PascalCase")]
+#[display(style = "CamelCase")]
 pub enum ViewVisibilityTypes {
     VisibilityPublic,
     VisibilityUnlisted,
@@ -55,7 +57,6 @@ pub enum ViewVisibilityTypes {
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
-/// * `automatic_route` - Whether a route should be created automatically
 #[cfg(feature = "ssr")]
 #[derive(Deserialize, Clone, Debug)]
 pub struct CreateView {
@@ -64,8 +65,7 @@ pub struct CreateView {
     pub content_body: Option<String>,
     pub content_head: Option<String>,
     pub description: Option<String>,
-    pub route: Option<String>,
-    pub automatic_route: Option<String>,
+    pub route: String,
 }
 
 /// # "CreateViewRequest" request model
@@ -102,6 +102,9 @@ impl TryFrom<CreateViewRequest> for CreateView {
     /// # Try to cast from `CreateViewRequest` to `CreateView`
     fn try_from(value: CreateViewRequest) -> Result<Self, PerseError> {
         let visibility: ViewVisibilityTypes = value.visibility.parse()?;
+        let route: String = value.route.ok_or_else(|| {
+            PerseError::new(ErrorTypes::InternalError, "A route must be provided.")
+        })?;
 
         Ok(Self {
             visibility,
@@ -109,8 +112,7 @@ impl TryFrom<CreateViewRequest> for CreateView {
             content_body: value.content_body,
             content_head: value.content_head,
             description: value.description,
-            route: value.route,
-            automatic_route: value.automatic_route,
+            route,
         })
     }
 }
