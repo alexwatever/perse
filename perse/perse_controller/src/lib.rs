@@ -2,6 +2,9 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 
+// # Views
+use perse_view::{create_view::Create, errors::NotFound};
+
 /// # Perse Controller
 
 /// ## Default Controller
@@ -28,7 +31,7 @@ fn get_user_routes() -> Option<Vec<&'static str>> {
 }
 
 /// ## Initialise the default Controller
-fn init_controller(global_css: View) -> leptos::Fragment {
+fn init_controller(global_css: View) -> Fragment {
     view! {
         // Metadata
         {global_css}
@@ -39,8 +42,8 @@ fn init_controller(global_css: View) -> leptos::Fragment {
             <main>
                 <Routes>
                     // Attach System Views
-                    <Route path="/p/create/view" view=perse_view::Create/>
-                    <Route path="/*any" view=perse_view::NotFound/>
+                    <Route path="/p/create/view" view=Create/>
+                    <Route path="/*any" view=NotFound/>
                 </Routes>
             </main>
         </Router>
@@ -48,7 +51,7 @@ fn init_controller(global_css: View) -> leptos::Fragment {
 }
 
 /// ## Initialise the fallback Controller
-fn init_fallback_controller(global_css: View) -> leptos::Fragment {
+fn init_fallback_controller(global_css: View) -> Fragment {
     view! {
         // Metadata
         {global_css}
@@ -59,7 +62,7 @@ fn init_fallback_controller(global_css: View) -> leptos::Fragment {
             <main>
                 <Routes>
                     // Attach System Views
-                    <Route path="/*any" view=perse_view::Create/>
+                    <Route path="/*any" view=Create/>
                 </Routes>
             </main>
         </Router>

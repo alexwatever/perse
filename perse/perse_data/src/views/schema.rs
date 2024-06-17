@@ -1,11 +1,6 @@
-#[cfg(feature = "ssr")]
 use parse_display::FromStr;
-use perse_utils::errors::ErrorTypes;
-#[cfg(feature = "ssr")]
-use perse_utils::errors::PerseError;
+use perse_utils::errors::{ErrorTypes, PerseError};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "ssr")]
-use sqlx::{FromRow, Type};
 use validator::Validate;
 
 /// # "View" model
@@ -20,7 +15,7 @@ use validator::Validate;
 /// * `description` - Description of the View
 /// * `route` - Route of the View
 #[cfg(feature = "ssr")]
-#[derive(Deserialize, Serialize, Clone, FromRow, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct View {
     pub id: uuid::Uuid,
     pub visibility: ViewVisibilityTypes,
@@ -34,10 +29,13 @@ pub struct View {
 /// # "ViewVisibilityTypes" model
 ///
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
-#[cfg(feature = "ssr")]
-#[derive(Deserialize, Serialize, FromStr, Type, Clone, Debug)]
-#[sqlx(type_name = "visibility_types", rename_all = "PascalCase")]
+#[derive(Deserialize, Serialize, FromStr, Clone, Debug)]
 #[serde(rename_all = "PascalCase")]
+#[cfg_attr(feature = "ssr", derive(sqlx::Type))]
+#[cfg_attr(
+    feature = "ssr",
+    sqlx(type_name = "visibility_types", rename_all = "PascalCase")
+)]
 pub enum ViewVisibilityTypes {
     VisibilityPublic,
     VisibilityUnlisted,
@@ -56,8 +54,7 @@ pub enum ViewVisibilityTypes {
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
-#[cfg(feature = "ssr")]
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct CreateView {
     pub visibility: ViewVisibilityTypes,
     pub title: String,
@@ -80,7 +77,7 @@ pub struct CreateView {
 /// * `automatic_route` - Whether a route should be created automatically
 #[derive(Deserialize, Serialize, Clone, Validate, Debug)]
 pub struct CreateViewRequest {
-    pub visibility: String,
+    pub visibility: ViewVisibilityTypes,
     #[validate(length(min = 1, max = 255))]
     pub title: String,
     #[validate(length(min = 1, max = 255))]
@@ -99,18 +96,17 @@ impl TryFrom<CreateViewRequest> for CreateView {
     type Error = PerseError;
 
     /// # Try to cast from `CreateViewRequest` to `CreateView`
-    fn try_from(value: CreateViewRequest) -> Result<Self, PerseError> {
-        let visibility: ViewVisibilityTypes = value.visibility.parse()?;
-        let route: String = value.route.ok_or_else(|| {
+    fn try_from(input: CreateViewRequest) -> Result<Self, PerseError> {
+        let route: String = input.route.ok_or_else(|| {
             PerseError::new(ErrorTypes::InternalError, "A route must be provided.")
         })?;
 
         Ok(Self {
-            visibility,
-            title: value.title,
-            content_body: value.content_body,
-            content_head: value.content_head,
-            description: value.description,
+            visibility: input.visibility,
+            title: input.title,
+            content_body: input.content_body,
+            content_head: input.content_head,
+            description: input.description,
             route,
         })
     }

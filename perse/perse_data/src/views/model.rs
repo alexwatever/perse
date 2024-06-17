@@ -2,12 +2,11 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
         use perse_utils::errors::{PerseError, ErrorTypes};
         use sqlx::{query_as, types::Uuid, PgPool};
-        use validator::Validate;
 
         // # Modules
         use super::{
             super::{ApiRequests, Database, DatabaseModels},
-            schema::{CreateView, CreateViewRequest, View, ViewVisibilityTypes},
+            schema::{CreateView, View, ViewVisibilityTypes},
         };
 
         impl View {
@@ -15,18 +14,13 @@ cfg_if::cfg_if! {
             ///
             /// ## Fields (mut)
             ///
-            /// * `data` - The `View` to insert into the Database
+            /// * `data` - The `CreateView` to insert into the Database
             ///
             /// ## Returns
             ///
             /// * `Result<View, PerseError>` - The newly created View
-            pub async fn new(data: CreateViewRequest) -> Result<View, PerseError> {
-                // Request validation
-                data.validate()
-                    .map_err(|err| PerseError::new(ErrorTypes::Conflict, format!("Failed to validate request: {err}")))?;
-
+            pub async fn new(mut data: CreateView) -> Result<View, PerseError> {
                 // Custom validation
-                let mut data: CreateView = data.try_into()?;
                 data.is_valid()?;
 
                 // Get a database connection

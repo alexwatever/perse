@@ -2113,6 +2113,7 @@ version = "0.1.2"
 dependencies = [
  "cfg-if",
  "dotenv",
+ "leptos",
  "once_cell",
  "parse-display",
  "perse_utils",
@@ -2144,11 +2145,11 @@ dependencies = [
  "leptos_actix",
  "leptos_router",
  "perse_data",
+ "perse_utils",
  "serde",
  "serde_json",
  "tracing",
  "validator",
- "web-sys",
 ]
 
 [[package]]
