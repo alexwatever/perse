@@ -85,5 +85,8 @@ pub async fn create_view(data: CreateViewRequest) -> Result<String, ServerFnErro
     let view: View = View::new(data.try_into()?).await?;
     let view: String = serde_json::to_string(&view)?;
 
+    // TODO: Create and return `Success` schema
+    // TODO: Insert/refresh data on the frontend
+
     Ok(view)
 }

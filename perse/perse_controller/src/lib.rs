@@ -3,7 +3,7 @@ use leptos_meta::*;
 use leptos_router::*;
 
 // # Views
-use perse_view::{create_view::Create, errors::NotFound};
+use perse_view::views::{create_view::Create, errors::NotFound};
 
 /// # Perse Controller
 
