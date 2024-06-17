@@ -2,6 +2,8 @@ use parse_display::ParseError;
 use server_fn::ServerFnError;
 use tracing::error;
 
+// # Error Results
+
 // Define the custom Perse error
 #[derive(Debug)]
 pub struct PerseError {
@@ -40,6 +42,8 @@ impl PerseError {
         }
     }
 }
+
+// ## Error Conversions
 
 impl From<PerseError> for ServerFnError {
     // Convert our `PerseError` into the Leptos `ServerFnError`

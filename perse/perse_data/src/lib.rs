@@ -3,11 +3,11 @@ pub mod views;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use perse_utils::errors::PerseError;
+        use perse_utils::results::PerseError;
         use sqlx::PgPool;
         use std::marker;
         use once_cell::sync::OnceCell;
-        use perse_utils::errors::ErrorTypes;
+        use perse_utils::results::ErrorTypes;
         use std::env;
         // use views::schema::Database;
 

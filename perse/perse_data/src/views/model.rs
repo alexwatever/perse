@@ -1,6 +1,6 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use perse_utils::errors::{PerseError, ErrorTypes};
+        use perse_utils::results::{PerseError, ErrorTypes};
         use sqlx::{query_as, types::Uuid, PgPool};
 
         // # Modules

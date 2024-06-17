@@ -1,5 +1,5 @@
 use parse_display::FromStr;
-use perse_utils::errors::{ErrorTypes, PerseError};
+use perse_utils::results::{ErrorTypes, PerseError};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
