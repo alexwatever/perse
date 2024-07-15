@@ -10,9 +10,6 @@ cfg_if::cfg_if! {
 
         /// # Perse Data
 
-        /// # API path prefix
-        pub const PATH_PREFIX: &str = "/api/v1";
-
         /// # Database Pool
         pub type DatabasePool = Pool<Postgres>;
         pub static DATABASE_POOL: OnceCell<DatabasePool> = OnceCell::new();

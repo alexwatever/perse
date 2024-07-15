@@ -26,9 +26,9 @@ cfg_if::cfg_if! {
                 query_as!(
                     View,
                     "
-                    INSERT INTO views (visibility, title, content_body, content_head, description, route)
-                    VALUES ($1, $2, $3, $4, $5, $6)
-                    RETURNING id, visibility AS \"visibility: ViewVisibilityTypes\", title, content_body, content_head, description, route
+                    INSERT INTO views (visibility, title, content_body, content_head, description, route, is_homepage)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    RETURNING id, visibility AS \"visibility: ViewVisibilityTypes\", title, content_body, content_head, description, route, is_homepage
                     ",
                     visib as ViewVisibilityTypes,
                     view.title,
@@ -36,6 +36,7 @@ cfg_if::cfg_if! {
                     view.content_head,
                     view.description,
                     view.route,
+                    view.is_homepage
                 )
                 .fetch_one(conn)
                 .await
@@ -66,7 +67,8 @@ cfg_if::cfg_if! {
                     content_body,
                     content_head,
                     description,
-                    route
+                    route,
+                    is_homepage
                     FROM views
                     WHERE id = $1
                     ",
@@ -95,7 +97,8 @@ cfg_if::cfg_if! {
                     content_body,
                     content_head,
                     description,
-                    route
+                    route,
+                    is_homepage
                     FROM views
                     ",
                 )
