@@ -2130,6 +2130,7 @@ version = "0.1.0"
 dependencies = [
  "cfg-if",
  "parse-display",
+ "serde",
  "server_fn",
  "sqlx",
  "tracing",

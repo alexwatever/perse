@@ -34,5 +34,5 @@ ssr = [
   "dep:once_cell",
 ]
 csr = [
-  "leptos/csr",
+  "leptos/csr"
 ]

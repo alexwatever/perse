@@ -1,5 +1,4 @@
 use parse_display::FromStr;
-use perse_utils::results::{ErrorTypes, PerseError};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -14,7 +13,7 @@ use validator::Validate;
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "ssr", feature = "csr"))]
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct View {
     pub id: uuid::Uuid,
@@ -54,60 +53,17 @@ pub enum ViewVisibilityTypes {
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Validate, Debug)]
 pub struct CreateView {
     pub visibility: ViewVisibilityTypes,
+    #[validate(length(min = 1, max = 255))]
     pub title: String,
+    #[validate(length(min = 1, max = 255))]
     pub content_body: Option<String>,
+    #[validate(length(min = 1, max = 255))]
     pub content_head: Option<String>,
+    #[validate(length(min = 1, max = 255))]
     pub description: Option<String>,
+    #[validate(length(min = 1, max = 255))]
     pub route: String,
-}
-
-/// # "CreateViewRequest" request model
-///
-/// ## Fields
-///
-/// * `visibility` - Visibility of the View, as a String
-/// * `title` - Title of the View
-/// * `content_body` - Body content
-/// * `content_head` - Head Content
-/// * `description` - Description of the View
-/// * `route` - Route of the View
-/// * `automatic_route` - Whether a route should be created automatically
-#[derive(Deserialize, Serialize, Clone, Validate, Debug)]
-pub struct CreateViewRequest {
-    pub visibility: ViewVisibilityTypes,
-    #[validate(length(min = 1, max = 255))]
-    pub title: String,
-    #[validate(length(min = 1, max = 255))]
-    pub content_body: Option<String>,
-    #[validate(length(min = 1, max = 255))]
-    pub content_head: Option<String>,
-    #[validate(length(min = 1, max = 255))]
-    pub description: Option<String>,
-    #[validate(length(min = 1, max = 255))]
-    pub route: Option<String>,
-    pub automatic_route: Option<String>,
-}
-
-#[cfg(feature = "ssr")]
-impl TryFrom<CreateViewRequest> for CreateView {
-    type Error = PerseError;
-
-    /// # Try to cast from `CreateViewRequest` to `CreateView`
-    fn try_from(input: CreateViewRequest) -> Result<Self, PerseError> {
-        let route: String = input.route.ok_or_else(|| {
-            PerseError::new(ErrorTypes::InternalError, "A route must be provided.")
-        })?;
-
-        Ok(Self {
-            visibility: input.visibility,
-            title: input.title,
-            content_body: input.content_body,
-            content_head: input.content_head,
-            description: input.description,
-            route,
-        })
-    }
 }

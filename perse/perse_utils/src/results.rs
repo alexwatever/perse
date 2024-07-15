@@ -1,18 +1,19 @@
 use parse_display::ParseError;
+use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 use tracing::error;
 
 // # Error Results
 
 // Define the custom Perse error
-#[derive(Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct PerseError {
     error_type: ErrorTypes,
     message: String,
 }
 
 // Define the Perse error types
-#[derive(Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub enum ErrorTypes {
     InternalError,
     Conflict,
