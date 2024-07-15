@@ -86,7 +86,7 @@ cfg_if::cfg_if! {
         }
 
         /// # Trait for API requests
-        pub trait ApiRequests {
+        pub trait PerseApiRequests {
             /// # Validate an incoming API request
             ///
             /// ## Fields
@@ -98,7 +98,7 @@ cfg_if::cfg_if! {
         }
 
         /// # Trait for Database models
-        pub trait DatabaseModels {
+        pub trait PerseDatabaseModels {
             /// The payload schema to create a new database entity
             type CreateRequest;
 

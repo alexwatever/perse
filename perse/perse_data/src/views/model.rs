@@ -5,11 +5,11 @@ cfg_if::cfg_if! {
 
         // # Modules
         use super::{
-            super::{ApiRequests, DatabaseModels},
+            super::{PerseApiRequests, PerseDatabaseModels},
             schema::{CreateView, View, ViewVisibilityTypes},
         };
 
-        impl DatabaseModels for View {
+        impl PerseDatabaseModels for View {
             type CreateRequest = CreateView;
 
             /// # Create and return a new `View` record
@@ -123,7 +123,7 @@ cfg_if::cfg_if! {
             }
         }
 
-        impl ApiRequests for CreateView {
+        impl PerseApiRequests for CreateView {
             /// # Validate the incoming `CreateView` API request
             ///
             /// ## Fields
