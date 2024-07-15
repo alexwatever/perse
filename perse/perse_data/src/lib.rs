@@ -10,6 +10,9 @@ cfg_if::cfg_if! {
 
         /// # Perse Data
 
+        /// # API path prefix
+        pub const PATH_PREFIX: &str = "/api/v1";
+
         /// # Database Pool
         pub type DatabasePool = Pool<Postgres>;
         pub static DATABASE_POOL: OnceCell<DatabasePool> = OnceCell::new();
@@ -19,7 +22,7 @@ cfg_if::cfg_if! {
         impl Database {
             // ## Initialise and return a reference to the database connection pool
             //
-            // ## Returns
+            // ### Returns
             // * `&'static DatabasePool` - A reference to the database connection pool
             pub async fn setup() -> &'static DatabasePool {
                 dotenv::dotenv().ok();
@@ -56,9 +59,12 @@ cfg_if::cfg_if! {
 
             // ## Create the initial database connection pool
             //
-            // ## Fields
+            // ### Fields
             // * `database_url` - The URL of the database to connect to
             // * `max_connections` - The maximum number of connections to allow
+            //
+            // ### Returns
+            // * `DatabasePool` - A new database connection pool
             async fn create(database_url: &str, max_connections: u32) -> DatabasePool {
                 // Setup a new PostgreSQL database connection pool with provided configuration
                 PgPoolOptions::new()
@@ -68,9 +74,9 @@ cfg_if::cfg_if! {
                     .expect("Failed to create a database connection pool.")
             }
 
-            // Get the existing database pool
+            // ## Get the existing database pool
             //
-            // ## Returns
+            // ### Returns
             // * `Result<&'static DatabasePool, PerseError>` - A reference to the database connection pool
             pub fn get() -> Result<&'static DatabasePool, PerseError> {
                 DATABASE_POOL
@@ -84,9 +90,11 @@ cfg_if::cfg_if! {
             /// # Validate an incoming API request
             ///
             /// ## Fields
-            ///
             /// * `self` - The API request payload to validate
-            fn is_valid(&self) -> Result<bool, PerseError>;
+            ///
+            /// ## Returns
+            /// * `Result<(), PerseError>` - A `Result` of the validation
+            fn is_valid(&self) -> Result<(), PerseError>;
         }
 
         /// # Trait for Database models
@@ -97,8 +105,10 @@ cfg_if::cfg_if! {
             /// # Insert an entity into the Database
             ///
             /// ## Fields
-            ///
             /// * `self` - The database entity to insert
+            ///
+            /// ## Returns
+            /// * `Result<Self, PerseError>` - The `View` created
             fn create(
                 conn: &PgPool,
                 new_record: &Self::CreateRequest,
@@ -109,8 +119,10 @@ cfg_if::cfg_if! {
             /// # Retrieve a database entity from the Database
             ///
             /// ## Fields
-            ///
             /// * `self` - The database entity to retrieve
+            ///
+            /// ## Returns
+            /// * `Result<Self, PerseError>` - The `View` requested
             fn get_by_id(
                 conn: &PgPool,
                 id: &str,
@@ -120,8 +132,11 @@ cfg_if::cfg_if! {
 
             /// # Retrieve a collection of all entities from the Database
             ///
+            /// ## Fields
+            /// * `self` - The database entity to retrieve
+            ///
             /// ## Returns
-            /// * `Result<Vec<View>, PerseError>` - A collection of all Views
+            /// * `Result<Vec<View>, PerseError>` - A collection of `View` entities
             fn get_all(conn: &PgPool) -> impl std::future::Future<Output = Result<Vec<Self>, PerseError>> + Send
             where
                 Self: marker::Sized;

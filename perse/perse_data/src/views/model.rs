@@ -131,16 +131,15 @@ cfg_if::cfg_if! {
             ///
             /// ## Returns
             /// * `Result<bool, PerseError>` - Whether the `CreateView` is valid
-            fn is_valid(&self) -> Result<bool, PerseError> {
+            fn is_valid(&self) -> Result<(), PerseError> {
                 use validator::Validate;
 
-                Ok(self.validate()
-                    .map(|_| true)?)
-                    // .map_err(|err| {
-                    //     PerseError::new(ErrorTypes::Validation, format!("Failed to validate the CreateView: {err}"))
-                    // })
+                // Request validation
+                self.validate()?;
 
                 // TODO: Custom Validation
+
+                Ok(())
             }
         }
     }

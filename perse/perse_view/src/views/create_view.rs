@@ -1,14 +1,15 @@
 use leptos::*;
 use leptos_router::*;
 use perse_data::views::schema::{CreateView, View as PerseView};
+use tracing::debug;
 
 /// # View for "Create View"
 #[component]
 pub fn Create() -> impl IntoView {
-    // Front-end API's
+    // Frontend APIs
     let create_view_api = Action::<CreateViewHandler, _>::server();
 
-    // Helper API's
+    // Helper APIs
     create_server_action::<GetAllHandler>();
 
     // ## Create View signal
@@ -75,10 +76,10 @@ pub fn Create() -> impl IntoView {
 
     // ## Signal Effects
     Effect::new_isomorphic(move |_| {
-        // Log the signal
-        logging::log!("Received signal = {:?}", create_view_signal.get());
+        // Log the signals
+        debug!("`create_view_signal`: {:?}", create_view_signal.get());
 
-        // Update the views list
+        // Update the All Views list
         set_views_list_signal.update(|n| *n += 1);
     });
 
@@ -186,11 +187,14 @@ async fn create_new(data: CreateView) -> Result<String, ServerFnError> {
     let mut data: CreateView = data;
     data.is_valid()?;
 
+    // Get a database connection
+    let conn = Database::get()?;
+
     // Determine the URL path
     data.route = CreateView::determine_url_path(&data)?;
 
-    // Get a database connection
-    let conn = Database::get()?;
+    // TODO: Has this been declared the new home page
+    // TODO: Update any current home page
 
     // Create and return the new View
     let value: PerseView = PerseView::create(conn, &data).await?;
