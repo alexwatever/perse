@@ -14,8 +14,8 @@ license.workspace = true
 edition.workspace = true
 
 [dependencies]
-perse_data = { workspace = true }
-
+perse_data.workspace = true
+perse_utils.workspace = true
 leptos.workspace = true
 leptos_actix = { workspace = true, optional = true }
 leptos_router.workspace = true
@@ -23,11 +23,10 @@ leptos_router.workspace = true
 actix-web = { workspace = true, optional = true }
 http = { workspace = true, optional = true }
 serde.workspace = true
-serde_json = { version = "1.0.117" }
+serde_json.workspace = true
 tracing = { workspace = true, optional = true }
 validator.workspace = true
-# set to v0.3.64 to avoid conflicts
-web-sys = { version = "=0.3.64" }
+sqlx = { workspace = true, optional = true }
 
 [features]
 hydrate = [
@@ -38,6 +37,7 @@ ssr = [
   "leptos_actix",
   "dep:actix-web",
   "dep:http",
+  "dep:sqlx",
 ]
 csr = [
   "leptos/csr",

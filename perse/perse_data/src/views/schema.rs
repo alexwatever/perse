@@ -1,3 +1,4 @@
+use parse_display::FromStr;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -6,15 +7,16 @@ use validator::Validate;
 /// ## Fields
 ///
 /// * `id` - ID of the View
-/// * `route` - Route of the View
+/// * `visibility` - Visibility of the View
 /// * `title` - Title of the View
 /// * `content_body` - Body content
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
-/// * `visibility` - Visibility of the View
+/// * `route` - Route of the View
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct View {
-    pub id: u32,
+    pub id: uuid::Uuid,
     pub visibility: ViewVisibilityTypes,
     pub title: String,
     pub content_body: Option<String>,
@@ -26,8 +28,13 @@ pub struct View {
 /// # "ViewVisibilityTypes" model
 ///
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
-#[derive(Deserialize, Serialize, Clone, Debug)]
-#[serde(rename_all = "snake_case")]
+#[derive(Deserialize, Serialize, FromStr, Clone, Debug)]
+#[serde(rename_all = "PascalCase")]
+#[cfg_attr(feature = "ssr", derive(sqlx::Type))]
+#[cfg_attr(
+    feature = "ssr",
+    sqlx(type_name = "visibility_types", rename_all = "PascalCase")
+)]
 pub enum ViewVisibilityTypes {
     VisibilityPublic,
     VisibilityUnlisted,
@@ -40,16 +47,15 @@ pub enum ViewVisibilityTypes {
 ///
 /// ## Fields
 ///
-/// * `visibility` - Visibility of the View
+/// * `visibility` - Visibility of the View, as enum `ViewVisibilityTypes`
 /// * `title` - Title of the View
 /// * `content_body` - Body content
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
-/// * `automatic_route` - Whether a route should be created automatically
 #[derive(Deserialize, Serialize, Clone, Validate, Debug)]
 pub struct CreateView {
-    pub visibility: Option<ViewVisibilityTypes>,
+    pub visibility: ViewVisibilityTypes,
     #[validate(length(min = 1, max = 255))]
     pub title: String,
     #[validate(length(min = 1, max = 255))]
@@ -59,6 +65,5 @@ pub struct CreateView {
     #[validate(length(min = 1, max = 255))]
     pub description: Option<String>,
     #[validate(length(min = 1, max = 255))]
-    pub route: Option<String>,
-    pub automatic_route: Option<String>,
+    pub route: String,
 }

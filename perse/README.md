@@ -39,11 +39,6 @@ cargo leptos watch
 
 ## Tools
 
-Use [**SQLx CLI:**](https://crates.io/crates/sqlx-cli) to manage Migrations.  
-```
-cargo install sqlx-cli
-```
-
 Update your [**rust-analyzer:**](https://crates.io/crates/sqlx-cli) configuration to include the following, to enable intellisense for both SSR and CSR.  
 ```
 "rust-analyzer.cargo.features": "all",
