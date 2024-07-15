@@ -1,49 +1,28 @@
 use leptos::*;
 use leptos_router::*;
-use perse_data::views::schema::CreateView;
+use perse_data::views::schema::{CreateView, View as PerseView};
 
-/// # Load a list of views from the database
-///
-/// ## Fields
-/// * `_count` - The number of signal updates
-///
-/// ## Returns  
-/// * `Result<Vec<View>, PerseError>` - A list of views
-async fn load_views(_count: i32) -> String {
-    String::new()
-
-    // // Get a database connection
-    // match perse_data::Database::get_connection_pool() {
-    //     // Get the list of views
-    //     Ok(conn) => View::get_list(conn)
-    //         .await
-    //         .map(|value| format!("Server returned {value:?}"))
-    //         .map_err(|err| format!("Server returned an error: {err:?}"))
-    //         .unwrap()
-    //     Err(err) => {
-    //         format!("Error getting connection pool: {err:?}")
-    //     }
-    // }
-}
-
-/// ## View for "Create View"
+/// # View for "Create View"
 #[component]
 pub fn Create() -> impl IntoView {
-    // Create the API server function
-    let server_function = Action::<CreateViewHandler, _>::server();
+    // Front-end API's
+    let create_view_api = Action::<CreateViewHandler, _>::server();
 
-    // ### Default handler
+    // Helper API's
+    create_server_action::<GetAllHandler>();
+
+    // ## Create View signal
 
     // Signal for the server response
-    let api_signal: Signal<Option<Result<String, ServerFnError>>> =
-        Signal::derive(move || server_function.value().get());
+    let create_view_signal: Signal<Option<Result<String, ServerFnError>>> =
+        Signal::derive(move || create_view_api.value().get());
 
     // Create an action for the server response signal
-    let api_signal_action = move || {
+    let create_view_action = move || {
         // Get the response
         let value = {
             move || {
-                api_signal
+                create_view_signal
                     .get()
                     // Check the response
                     .map(move |response| {
@@ -67,19 +46,22 @@ pub fn Create() -> impl IntoView {
         }
     };
 
-    // ### Views List
+    // ## Views List signal
 
     // Signal for the views list
     let (views_list_signal, set_views_list_signal) = create_signal(0);
 
     // Create a resource for tracking the views list signal
     let views_list_signal_resource = create_resource(
-        // the first is the "source signal"
+        // source signal
         views_list_signal,
-        // the second is the loader
-        // it takes the source signal's value as its argument
-        // and does some async work
-        |value| async move { load_views(value).await },
+        // loader
+        |signal_count| async move {
+            get_all(signal_count)
+                .await
+                .map_err(|err| format!("Server returned an error: {err:?}"))
+                .unwrap()
+        },
     );
 
     // Create an action for the views list signal
@@ -91,23 +73,23 @@ pub fn Create() -> impl IntoView {
             .unwrap_or_else(|| "Loading...".into())
     };
 
-    // ### Signal effects
+    // ## Signal Effects
     Effect::new_isomorphic(move |_| {
         // Log the signal
-        logging::log!("Received signal = {:?}", api_signal.get());
+        logging::log!("Received signal = {:?}", create_view_signal.get());
 
         // Update the views list
         set_views_list_signal.update(|n| *n += 1);
     });
 
-    // ### Views
+    // ## Views
 
     // Loader View
     let loader = move || {
         view! { <p>"Loading..."</p> }
     };
 
-    // Content
+    // Main View
     const APP_NAME: &str = "perse";
     view! {
         <nav id="navbar">
@@ -119,7 +101,7 @@ pub fn Create() -> impl IntoView {
 
             <main>
                 <section>
-                    <ActionForm action=server_function
+                    <ActionForm action=create_view_api
                         on:submit=move |_event| {
                             // # TODO: Client Validation
 
@@ -172,7 +154,7 @@ pub fn Create() -> impl IntoView {
                         </div>
 
                         <div>
-                            <Transition fallback=loader>{api_signal_action}</Transition>
+                            <Transition fallback=loader>{create_view_action}</Transition>
                         </div>
                     </ActionForm>
                 </section>
@@ -189,25 +171,55 @@ pub fn Create() -> impl IntoView {
     }
 }
 
-/// ## Create View API
+/// # Create a new `View` record in the database
+///
+/// ## Fields
+/// * `data` - The data to create a new `View` record with
+///
+/// ## Returns
+/// * `Result<String, ServerFnError>` - The successful response as a String
 #[server(name = CreateViewHandler, prefix = "/api/v1", endpoint = "view/create")]
-pub async fn create_view(data: CreateView) -> Result<String, ServerFnError> {
-    use perse_data::views::schema::View;
-    use validator::Validate;
+async fn create_new(data: CreateView) -> Result<String, ServerFnError> {
+    use perse_data::{ApiRequests, Database, DatabaseModels};
 
-    println!("Request: {:?}", data);
+    // Declare mutable, and run Request & Custom validation
+    let mut data: CreateView = data;
+    data.is_valid()?;
 
-    // Request validation
-    data.validate()?;
+    // Determine the URL path
+    data.route = CreateView::determine_url_path(&data)?;
 
-    // Create and return the new view
-    let view: View = View::new(data).await?;
-    let view: String = serde_json::to_string(&view)?;
+    // Get a database connection
+    let conn = Database::get()?;
 
-    // TODO: Create and return `Success` schema
-    // TODO: Insert/refresh data on the frontend
+    // Create and return the new View
+    let value: PerseView = PerseView::create(conn, &data).await?;
+    let value: String = serde_json::to_string(&value)?;
 
-    println!("Response: {:?}", view);
+    // TODO: Create and return a `Success` schema
 
-    Ok(view)
+    Ok(value)
+}
+
+/// # Retrieve the collection of `View` records from the database
+///
+/// ## Fields
+/// * `_signal_count` - The number of signal updates
+///
+/// ## Returns  
+/// * `Result<Vec<View>, PerseError>` - A list of views
+#[server(name = GetAllHandler, prefix = "/api/v1", endpoint = "views")]
+async fn get_all(_signal_count: i32) -> Result<String, ServerFnError> {
+    use perse_data::{Database, DatabaseModels};
+
+    // Get a database connection
+    let conn = Database::get()?;
+
+    // Create and return the collection of Views
+    let value: Vec<PerseView> = PerseView::get_all(conn).await?;
+    let value: String = serde_json::to_string(&value)?;
+
+    // TODO: Create and return a `Success` schema
+
+    Ok(value)
 }

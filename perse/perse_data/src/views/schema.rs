@@ -13,7 +13,7 @@ use validator::Validate;
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
-#[cfg(any(feature = "ssr", feature = "csr"))]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct View {
     pub id: uuid::Uuid,

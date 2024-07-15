@@ -69,5 +69,5 @@ lto = true
 opt-level = 'z'
 
 [workspace.metadata.cargo-all-features]
-denylist = ["actix-files", "actix-web", "leptos_actix"]
+denylist = ["actix-files", "actix-web", "leptos_actix", "sqlx"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]

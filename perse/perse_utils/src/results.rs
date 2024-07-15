@@ -2,6 +2,7 @@ use parse_display::ParseError;
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 use tracing::error;
+use validator::ValidationErrors;
 
 // # Error Results
 
@@ -17,6 +18,7 @@ pub struct PerseError {
 pub enum ErrorTypes {
     InternalError,
     Conflict,
+    Validation,
 }
 
 impl PerseError {
@@ -29,6 +31,7 @@ impl PerseError {
         message_template += match error_type {
             ErrorTypes::InternalError => "(500) ",
             ErrorTypes::Conflict => "(409) ",
+            ErrorTypes::Validation => "(400) ",
         };
 
         // Format the logged messsage
@@ -48,11 +51,12 @@ impl PerseError {
 
 impl From<PerseError> for ServerFnError {
     // Convert our `PerseError` into the Leptos `ServerFnError`
-    fn from(input: PerseError) -> Self {
+    fn from(err: PerseError) -> Self {
         // Determine the best error type
-        let output: ServerFnError = match input.error_type {
-            ErrorTypes::InternalError => ServerFnError::ServerError(input.message),
-            ErrorTypes::Conflict => ServerFnError::ServerError(input.message),
+        let output: ServerFnError = match err.error_type {
+            ErrorTypes::InternalError => ServerFnError::ServerError(err.message),
+            ErrorTypes::Conflict => ServerFnError::ServerError(err.message),
+            ErrorTypes::Validation => ServerFnError::ServerError(err.message),
         };
 
         output
@@ -61,20 +65,22 @@ impl From<PerseError> for ServerFnError {
 
 impl From<ParseError> for PerseError {
     // Convert a `ParseError` into a `PerseError`
-    fn from(input: ParseError) -> Self {
-        Self::new(ErrorTypes::Conflict, input.to_string())
+    fn from(err: ParseError) -> Self {
+        Self::new(ErrorTypes::Conflict, err.to_string())
     }
 }
 
-cfg_if::cfg_if! {
-    if #[cfg(feature = "ssr")] {
-        use sqlx::Error as SqlxError;
+impl From<ValidationErrors> for PerseError {
+    // Convert a `ValidationErrors` into a `PerseError`
+    fn from(err: ValidationErrors) -> Self {
+        Self::new(ErrorTypes::Validation, err.to_string())
+    }
+}
 
-        // Convert a sqlx `Error` into a `PerseError`
-        impl From<SqlxError> for PerseError {
-            fn from(input: SqlxError) -> Self {
-                Self::new(ErrorTypes::InternalError, format!("SQLx error: {}", input))
-            }
-        }
+#[cfg(feature = "ssr")]
+impl From<sqlx::Error> for PerseError {
+    // Convert a sqlx `Error` into a `PerseError`
+    fn from(err: sqlx::Error) -> Self {
+        Self::new(ErrorTypes::InternalError, format!("SQLx error: {}", err))
     }
 }

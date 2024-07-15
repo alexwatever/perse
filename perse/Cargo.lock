@@ -2134,6 +2134,7 @@ dependencies = [
  "server_fn",
  "sqlx",
  "tracing",
+ "validator",
 ]
 
 [[package]]
@@ -2149,6 +2150,7 @@ dependencies = [
  "perse_utils",
  "serde",
  "serde_json",
+ "sqlx",
  "tracing",
  "validator",
 ]
