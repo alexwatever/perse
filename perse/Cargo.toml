@@ -13,7 +13,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.16"
+version = "0.1.17"
 readme = "README.md"
 description = "Perse is a site-builder."
 repository = "https://github.com/alexwatever/perse"
@@ -33,9 +33,9 @@ unstable_features = "warn"
 ### Perse `dependencies`
 ##########################
 perse_controller = { path = "./perse_controller", version = "=0.1.6" }
-perse_data = { path = "./perse_data", version = "=0.1.2" }
+perse_data = { path = "./perse_data", version = "=0.1.3" }
 perse_utils = { path = "./perse_utils", version = "=0.1.0" }
-perse_view = { path = "./perse_view", version = "=0.1.4" }
+perse_view = { path = "./perse_view", version = "=0.1.5" }
 actix-web = { version = "4.5.8", features = ["macros"] }
 parse-display = { version = "0.9.1" }
 serde = { version = "1.0.203", features = ["derive"] }
