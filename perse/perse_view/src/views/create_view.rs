@@ -17,49 +17,6 @@ pub fn Create() -> impl IntoView {
     // Signal for the create view response
     let create_view_signal = Signal::derive(move || create_view_api.value().get());
 
-    // Action for the create view signal
-    let create_view_action = move || {
-        let value = {
-            move || {
-                // Get the Create View response
-                create_view_signal
-                    .get()
-                    .map(move |response| {
-                        response
-                            // View for the form result
-                            .map(move |view| {
-                                view! {
-                                    <br />
-                                    <section>
-                                        <header><h2>"Success"</h2></header>
-                                        <p>"Your new view has been created!"</p>
-                                        <p>
-                                            <a href={format!("/{}", view.route)} title={view.title.clone()}>
-                                                {format!("/{} ({})", view.route, view.title)}
-                                            </a>
-                                        </p>
-                                    </section>
-                                }
-                            })
-                            // View for the form error
-                            .unwrap_or_else(move |err| {
-                                view! {
-                                    <br />
-                                    <section>
-                                        <header><h2>"Something went wrong"</h2></header>
-                                        <p>{err.to_string()}</p>
-                                    </section>
-                                }
-                            })
-                    })
-                    .collect_view()
-            }
-        };
-
-        // Return the component
-        view! { <div>{value}</div> }
-    };
-
     // TODO: Validate the Create View client request
     let create_view_validation = move |_event| {
         // let data = CreateView::from_event(&_event).expect("to parse form data");
@@ -168,7 +125,37 @@ pub fn Create() -> impl IntoView {
 
                         <div>
                             <Transition fallback=loader>
-                                {create_view_action}
+                                // Action for the create view signal
+                                {move || {
+                                    // Get the Create View response
+                                    create_view_signal
+                                        .get()
+                                        .map(|response| {
+                                            response
+                                                // View for the form result
+                                                .map(|view| view! {
+                                                    <br />
+                                                    <section>
+                                                        <header><h2>"Success"</h2></header>
+                                                        <p>"Your new view has been created!"</p>
+                                                        <p>
+                                                            <a href={format!("/{}", view.route)} title={view.title.clone()}>
+                                                                {format!("/{} ({})", view.route, view.title)}
+                                                            </a>
+                                                        </p>
+                                                    </section>
+                                                })
+                                                // View for the form error
+                                                .unwrap_or_else(|err| view! {
+                                                    <br />
+                                                    <section>
+                                                        <header><h2>"Something went wrong"</h2></header>
+                                                        <p>{err.to_string()}</p>
+                                                    </section>
+                                                })
+                                        })
+                                        .collect_view()
+                                }}
                             </Transition>
                         </div>
                     </ActionForm>
@@ -181,6 +168,7 @@ pub fn Create() -> impl IntoView {
                     <main>
                         <Transition fallback=loader>
                             <ul>
+                                // Action for the get views signal
                                 {move || {
                                     views_list_signal_action()
                                         .into_iter()
