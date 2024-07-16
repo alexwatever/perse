@@ -163,7 +163,7 @@ cfg_if::cfg_if! {
             ) -> Result<String, PerseError> {
                 let mut route = data.route.to_string();
 
-                // TODO: Check if the Route already exists using sqlx. And if it does, append a number to the end of the route until it doesn't exist
+                // Check if the Route already exists using sqlx. And if it does, append a number to the end of the route until it doesn't exist
                 let mut i = 0;
                 loop {
                     // Check if the Route already exists in the database, using sqlx
