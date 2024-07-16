@@ -9,67 +9,90 @@ use crate::views::components::{loader::Loader, PerseComponent};
 /// # View for "Create View"
 #[component]
 pub fn Create() -> impl IntoView {
-    // Frontend APIs
-    let create_view_api = Action::<CreateViewHandler, _>::server();
-
-    // Helper APIs
-    create_server_action::<GetAllHandler>();
-
     // ## Create View signal
 
-    // Signal for the server response
-    let create_view_signal: Signal<Option<Result<String, ServerFnError>>> =
-        Signal::derive(move || create_view_api.value().get());
+    // Create a Frontend API for Create View
+    let create_view_api = Action::<CreateViewHandler, _>::server();
 
-    // Create an action for the server response signal
+    // Signal for the create view response
+    let create_view_signal = Signal::derive(move || create_view_api.value().get());
+
+    // Action for the create view signal
     let create_view_action = move || {
-        // Get the response
         let value = {
             move || {
+                // Get the Create View response
                 create_view_signal
                     .get()
-                    // Check the response
                     .map(move |response| {
-                        response.unwrap_or_else(|err| {
-                            // TODO: Handle errors
-
-                            // Return a result
-                            format!("There was an error: {err}")
-                        })
+                        response
+                            // View for the form result
+                            .map(move |view| {
+                                view! {
+                                    <br />
+                                    <section>
+                                        <header><h2>"Success"</h2></header>
+                                        <p>"Your new view has been created!"</p>
+                                        <p>
+                                            <a href={format!("/{}", view.route)} title={view.title.clone()}>
+                                                {format!("/{} ({})", view.route, view.title)}
+                                            </a>
+                                        </p>
+                                    </section>
+                                }
+                            })
+                            // View for the form error
+                            .unwrap_or_else(move |err| {
+                                view! {
+                                    <br />
+                                    <section>
+                                        <header><h2>"Something went wrong"</h2></header>
+                                        <p>{err.to_string()}</p>
+                                    </section>
+                                }
+                            })
                     })
-                    // Loading state for before the first load
-                    .unwrap_or_else(|| "Pending...".into())
+                    .collect_view()
             }
         };
 
-        // TODO: Deserialize the response
-
-        // Return a view
-        view! {
-            <p><strong>Result:</strong> {value}</p>
-        }
+        // Return the component
+        view! { <div>{value}</div> }
     };
 
-    // ## Views List signal
+    // TODO: Validate the Create View client request
+    let create_view_validation = move |_event| {
+        // let data = CreateView::from_event(&_event).expect("to parse form data");
+        // // silly example of validation: if the todo is "nope!", nope it
+        // if data.title == "nope!" {
+        //     // ev.prevent_default() will prevent form submission
+        //     ev.prevent_default();
+        // }
+    };
 
-    // Signal for the views list
-    let (views_list_signal, set_views_list_signal) = create_signal(0);
+    // ## Get All Views signal
 
-    // Create a resource for tracking the views list signal
-    let views_list_signal_resource = create_resource(
-        // source signal
-        views_list_signal,
-        // loader
-        |signal_count| async move { get_all(signal_count).await },
+    // Create a Server API for Get All Views
+    create_server_action::<GetAllHandler>();
+
+    // Signal for the get all views response
+    let (get_all_views_signal, set_all_views_signal) = create_signal(0);
+
+    // Resource for tracking the get all views signal
+    let get_all_views_signal_resource = create_resource(
+        // Signal source
+        get_all_views_signal,
+        // Loader
+        |signal_count| async move { get_all_views(signal_count).await },
     );
 
-    // Create an action for the views list signal
+    // Action for the get all views signal
     let views_list_signal_action = move || {
-        // Get the signals value
-        views_list_signal_resource
+        get_all_views_signal_resource
+            // Get the signals value
             .get()
             // This loading state will only show before the first load
-            .unwrap_or_else(|| Ok("Loading...".into()))
+            .unwrap_or_else(|| Ok(vec![]))
             .map_err(|err| format!("Server returned an error: {err:?}"))
             .unwrap()
     };
@@ -80,7 +103,7 @@ pub fn Create() -> impl IntoView {
         debug!("`create_view_signal`: {:?}", create_view_signal.get());
 
         // Update the All Views list
-        set_views_list_signal.update(|n| *n += 1);
+        set_all_views_signal.update(|n| *n += 1);
     });
 
     // ## Views
@@ -95,23 +118,12 @@ pub fn Create() -> impl IntoView {
             <a id="brand-link" href="/" aria-label=APP_NAME><strong>{APP_NAME}</strong></a>
         </nav>
 
-        <article class=move || { format!("{name}-block", name = APP_NAME ) }>
+        <article class=move || { format!("{APP_NAME}-block") }>
             <header><h1>"Create View"</h1></header>
 
             <main>
                 <section>
-                    <ActionForm action=create_view_api
-                        on:submit=move |_event| {
-                            // # TODO: Client Validation
-
-                            // let data = CreateView::from_event(&_event).expect("to parse form data");
-                            // // silly example of validation: if the todo is "nope!", nope it
-                            // if data.title == "nope!" {
-                            //     // ev.prevent_default() will prevent form submission
-                            //     ev.prevent_default();
-                            // }
-                        }
-                    >
+                    <ActionForm action=create_view_api on:submit=create_view_validation>
                         <div>
                             <div>
                                 <label for="visibility">"Visibility"</label>
@@ -137,19 +149,21 @@ pub fn Create() -> impl IntoView {
                                 <label for="description">"Description"</label>
                                 <textarea id="description" name="data[description]" placeholder=""></textarea>
                             </div>
-                            <br /><br />
-                        </div>
-
-                        <div>
                             <div>
                                 <label for="route">"Route"</label>
                                 <input id="route" name="data[route]" type="text" placeholder="about-me" required />
                             </div>
-                            <br /><br />
+                            <br />
+                            <div>
+                                <label for="is_homepage">"Is this the new homepage?"</label>
+                                <input id="is_homepage" name="data[is_homepage]" type="checkbox" />
+                            </div>
+                            <br />
                         </div>
 
                         <div>
                             <button type="submit" aria-label="Save View">"Save"</button>
+                            <br />
                         </div>
 
                         <div>
@@ -161,11 +175,27 @@ pub fn Create() -> impl IntoView {
                 </section>
 
                 <section>
+                    <br />
                     <header><h2>"Your Views"</h2></header>
 
                     <main>
                         <Transition fallback=loader>
-                            {views_list_signal_action}
+                            <ul>
+                                {move || {
+                                    views_list_signal_action()
+                                        .into_iter()
+                                        .map(|view| {
+                                            view! {
+                                                <li>
+                                                    <a href={format!("/{}", view.route)} title={view.title.clone()}>
+                                                        {format!("/{} ({})", view.route, view.title)}
+                                                    </a>
+                                                </li>
+                                            }
+                                        })
+                                        .collect_view()
+                                }}
+                            </ul>
                         </Transition>
                     </main>
                 </section>
@@ -180,31 +210,29 @@ pub fn Create() -> impl IntoView {
 /// * `data` - The data to create a new `View` record with
 ///
 /// ## Returns
-/// * `Result<String, ServerFnError>` - The successful response as a String
+/// * `Result<PerseView, ServerFnError>` - The successful response as a Perse View
 #[server(name = CreateViewHandler, prefix = "/api/v1", endpoint = "view/create")]
-async fn create_new(data: CreateView) -> Result<String, ServerFnError> {
+async fn create_view(data: CreateView) -> Result<PerseView, ServerFnError> {
     use perse_data::{Database, PerseApiRequests, PerseDatabaseModels};
 
     // Declare mutable, and run Request & Custom validation
     let mut data: CreateView = data;
     data.is_valid()?;
 
-    // Get a database connection
-    let conn = Database::get()?;
+    // Get a database connection and start a transaction
+    let mut transaction = Database::get()?.begin().await?;
 
     // Determine the URL path
-    data.route = CreateView::determine_url_path(&data)?;
+    data.route = CreateView::determine_url_path(&mut transaction, &data).await?;
 
-    // TODO: Has this been declared the new home page
-    // TODO: Update any current home page
+    // Create the new View
+    let data: PerseView = PerseView::create(&mut transaction, &data.into()).await?;
+    // let data: String = serde_json::to_string(&data)?;
 
-    // Create and return the new View
-    let value: PerseView = PerseView::create(conn, &data).await?;
-    let value: String = serde_json::to_string(&value)?;
+    // Commit the transaction and return the new View
+    transaction.commit().await?;
 
-    // TODO: Create and return a `Success` schema
-
-    Ok(value)
+    Ok(data)
 }
 
 /// # Retrieve the collection of `View` records from the database
@@ -213,19 +241,16 @@ async fn create_new(data: CreateView) -> Result<String, ServerFnError> {
 /// * `_signal_count` - The number of signal updates
 ///
 /// ## Returns  
-/// * `Result<Vec<View>, PerseError>` - A list of views
+/// * `Result<Vec<View>, ServerFnError>` - A list of views
 #[server(name = GetAllHandler, prefix = "/api/v1", endpoint = "views")]
-async fn get_all(_signal_count: i32) -> Result<String, ServerFnError> {
+async fn get_all_views(_signal_count: i32) -> Result<Vec<PerseView>, ServerFnError> {
     use perse_data::{Database, PerseDatabaseModels};
 
     // Get a database connection
     let conn = Database::get()?;
 
     // Create and return the collection of Views
-    let value: Vec<PerseView> = PerseView::get_all(conn).await?;
-    let value: String = serde_json::to_string(&value)?;
+    let data = PerseView::get_all(conn).await?;
 
-    // TODO: Create and return a `Success` schema
-
-    Ok(value)
+    Ok(data)
 }

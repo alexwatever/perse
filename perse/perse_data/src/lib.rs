@@ -6,7 +6,7 @@ cfg_if::cfg_if! {
         use once_cell::sync::OnceCell;
         use perse_utils::results::{ErrorTypes, PerseError};
         use std::{env, marker};
-        use sqlx::{PgPool, Pool, Postgres, postgres::PgPoolOptions};
+        use sqlx::{PgPool, Pool, Postgres, postgres::PgPoolOptions, Transaction};
 
         /// # Perse Data
 
@@ -107,7 +107,7 @@ cfg_if::cfg_if! {
             /// ## Returns
             /// * `Result<Self, PerseError>` - The `View` created
             fn create(
-                conn: &PgPool,
+                transaction: &mut Transaction<'_, Postgres>,
                 new_record: &Self::CreateRequest,
             ) -> impl std::future::Future<Output = Result<Self, PerseError>> + Send
             where

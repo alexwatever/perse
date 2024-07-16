@@ -1,8 +1,49 @@
 use parse_display::ParseError;
 use serde::{Deserialize, Serialize};
+use serde_json::Error;
 use server_fn::ServerFnError;
 use tracing::error;
 use validator::ValidationErrors;
+
+/// # Successful API Responses
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct SuccessResponse {
+    success: bool,
+    data: String,
+}
+
+impl SuccessResponse {
+    /// # Create a new success response
+    ///
+    /// ## Fields
+    /// * `data` - The data to return in the response, as a serialised string
+    ///
+    /// ## Returns
+    /// * `SuccessResponse` - A success response
+    pub fn new(data: impl ToString) -> Self {
+        Self {
+            success: true,
+            data: data.to_string(),
+        }
+    }
+}
+
+/// # SuccessResponse Conversions
+
+impl TryFrom<SuccessResponse> for String {
+    type Error = Error;
+
+    /// # Convert a `SuccessResponse` into a string
+    ///
+    /// ## Fields
+    /// * `response` - The response to convert to a string
+    ///
+    /// ## Returns
+    /// * `Result<String, Error>` - A result of the conversion
+    fn try_from(response: SuccessResponse) -> Result<Self, Self::Error> {
+        serde_json::to_string(&response)
+    }
+}
 
 // # Error Results
 
@@ -10,7 +51,7 @@ use validator::ValidationErrors;
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct PerseError {
     error_type: ErrorTypes,
-    message: String,
+    data: String,
 }
 
 // Define the Perse error types
@@ -42,7 +83,7 @@ impl PerseError {
 
         Self {
             error_type,
-            message: message_template,
+            data: message_template,
         }
     }
 }
@@ -54,9 +95,9 @@ impl From<PerseError> for ServerFnError {
     fn from(err: PerseError) -> Self {
         // Determine the best error type
         let output: ServerFnError = match err.error_type {
-            ErrorTypes::InternalError => ServerFnError::ServerError(err.message),
-            ErrorTypes::Conflict => ServerFnError::ServerError(err.message),
-            ErrorTypes::Validation => ServerFnError::ServerError(err.message),
+            ErrorTypes::InternalError => ServerFnError::ServerError(err.data),
+            ErrorTypes::Conflict => ServerFnError::ServerError(err.data),
+            ErrorTypes::Validation => ServerFnError::ServerError(err.data),
         };
 
         output

@@ -6,7 +6,9 @@ use validator::Validate;
 ///
 /// ## Fields
 ///
-/// * `id` - ID of the View
+/// * `id` - ID of the View. This value cannot actually be NULL on retrieval, but this allows us to enforce types for sqlx inserts.
+/// * `created_at` - Creation date of the View
+/// * `updated_at` - Last updated date of the View
 /// * `visibility` - Visibility of the View
 /// * `title` - Title of the View
 /// * `content_body` - Body content
@@ -14,10 +16,19 @@ use validator::Validate;
 /// * `description` - Description of the View
 /// * `route` - Route of the View
 /// * `is_homepage` - Whether the View is the homepage
-#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+// #[cfg(feature = "ssr")]
 #[derive(Deserialize, Serialize, Clone, Debug)]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct View {
-    pub id: uuid::Uuid,
+    pub id: Option<uuid::Uuid>,
+    #[cfg(feature = "ssr")]
+    pub created_at: Option<sqlx::types::chrono::NaiveDateTime>,
+    #[cfg(not(feature = "ssr"))]
+    pub created_at: Option<String>,
+    #[cfg(feature = "ssr")]
+    pub updated_at: Option<sqlx::types::chrono::NaiveDateTime>,
+    #[cfg(not(feature = "ssr"))]
+    pub updated_at: Option<String>,
     pub visibility: ViewVisibilityTypes,
     pub title: String,
     pub content_body: Option<String>,
@@ -69,5 +80,23 @@ pub struct CreateView {
     pub description: Option<String>,
     #[validate(length(min = 1, max = 255))]
     pub route: String,
-    pub is_homepage: bool,
+    pub is_homepage: Option<String>,
+}
+
+#[cfg(feature = "ssr")]
+impl From<CreateView> for View {
+    fn from(view: CreateView) -> Self {
+        View {
+            id: None,
+            created_at: None,
+            updated_at: None,
+            visibility: view.visibility,
+            title: view.title,
+            content_body: view.content_body,
+            content_head: view.content_head,
+            description: view.description,
+            route: view.route,
+            is_homepage: view.is_homepage.is_some(),
+        }
+    }
 }
