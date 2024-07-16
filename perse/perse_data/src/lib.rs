@@ -10,9 +10,6 @@ cfg_if::cfg_if! {
 
         /// # Perse Data
 
-        /// # API path prefix
-        pub const PATH_PREFIX: &str = "/api/v1";
-
         /// # Database Pool
         pub type DatabasePool = Pool<Postgres>;
         pub static DATABASE_POOL: OnceCell<DatabasePool> = OnceCell::new();
@@ -86,7 +83,7 @@ cfg_if::cfg_if! {
         }
 
         /// # Trait for API requests
-        pub trait ApiRequests {
+        pub trait PerseApiRequests {
             /// # Validate an incoming API request
             ///
             /// ## Fields
@@ -98,7 +95,7 @@ cfg_if::cfg_if! {
         }
 
         /// # Trait for Database models
-        pub trait DatabaseModels {
+        pub trait PerseDatabaseModels {
             /// The payload schema to create a new database entity
             type CreateRequest;
 

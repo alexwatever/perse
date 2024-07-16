@@ -3,6 +3,9 @@ use leptos_router::*;
 use perse_data::views::schema::{CreateView, View as PerseView};
 use tracing::debug;
 
+// # Components
+use crate::views::components::{loader::Loader, PerseComponent};
+
 /// # View for "Create View"
 #[component]
 pub fn Create() -> impl IntoView {
@@ -57,12 +60,7 @@ pub fn Create() -> impl IntoView {
         // source signal
         views_list_signal,
         // loader
-        |signal_count| async move {
-            get_all(signal_count)
-                .await
-                .map_err(|err| format!("Server returned an error: {err:?}"))
-                .unwrap()
-        },
+        |signal_count| async move { get_all(signal_count).await },
     );
 
     // Create an action for the views list signal
@@ -71,7 +69,9 @@ pub fn Create() -> impl IntoView {
         views_list_signal_resource
             .get()
             // This loading state will only show before the first load
-            .unwrap_or_else(|| "Loading...".into())
+            .unwrap_or_else(|| Ok("Loading...".into()))
+            .map_err(|err| format!("Server returned an error: {err:?}"))
+            .unwrap()
     };
 
     // ## Signal Effects
@@ -85,10 +85,8 @@ pub fn Create() -> impl IntoView {
 
     // ## Views
 
-    // Loader View
-    let loader = move || {
-        view! { <p>"Loading..."</p> }
-    };
+    // Components
+    let loader = Loader::get;
 
     // Main View
     const APP_NAME: &str = "perse";
@@ -155,7 +153,9 @@ pub fn Create() -> impl IntoView {
                         </div>
 
                         <div>
-                            <Transition fallback=loader>{create_view_action}</Transition>
+                            <Transition fallback=loader>
+                                {create_view_action}
+                            </Transition>
                         </div>
                     </ActionForm>
                 </section>
@@ -164,7 +164,9 @@ pub fn Create() -> impl IntoView {
                     <header><h2>"Your Views"</h2></header>
 
                     <main>
-                        <Transition fallback=loader>{views_list_signal_action}</Transition>
+                        <Transition fallback=loader>
+                            {views_list_signal_action}
+                        </Transition>
                     </main>
                 </section>
             </main>
@@ -181,7 +183,7 @@ pub fn Create() -> impl IntoView {
 /// * `Result<String, ServerFnError>` - The successful response as a String
 #[server(name = CreateViewHandler, prefix = "/api/v1", endpoint = "view/create")]
 async fn create_new(data: CreateView) -> Result<String, ServerFnError> {
-    use perse_data::{ApiRequests, Database, DatabaseModels};
+    use perse_data::{Database, PerseApiRequests, PerseDatabaseModels};
 
     // Declare mutable, and run Request & Custom validation
     let mut data: CreateView = data;
@@ -214,7 +216,7 @@ async fn create_new(data: CreateView) -> Result<String, ServerFnError> {
 /// * `Result<Vec<View>, PerseError>` - A list of views
 #[server(name = GetAllHandler, prefix = "/api/v1", endpoint = "views")]
 async fn get_all(_signal_count: i32) -> Result<String, ServerFnError> {
-    use perse_data::{Database, DatabaseModels};
+    use perse_data::{Database, PerseDatabaseModels};
 
     // Get a database connection
     let conn = Database::get()?;

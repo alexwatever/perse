@@ -13,6 +13,7 @@ use validator::Validate;
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
+/// * `is_homepage` - Whether the View is the homepage
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct View {
@@ -23,6 +24,7 @@ pub struct View {
     pub content_head: Option<String>,
     pub description: Option<String>,
     pub route: String,
+    pub is_homepage: bool,
 }
 
 /// # "ViewVisibilityTypes" model
@@ -53,6 +55,7 @@ pub enum ViewVisibilityTypes {
 /// * `content_head` - Head Content
 /// * `description` - Description of the View
 /// * `route` - Route of the View
+/// * `is_homepage` - Whether the View is the homepage
 #[derive(Deserialize, Serialize, Clone, Validate, Debug)]
 pub struct CreateView {
     pub visibility: ViewVisibilityTypes,
@@ -66,4 +69,5 @@ pub struct CreateView {
     pub description: Option<String>,
     #[validate(length(min = 1, max = 255))]
     pub route: String,
+    pub is_homepage: bool,
 }
