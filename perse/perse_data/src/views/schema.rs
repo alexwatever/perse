@@ -38,6 +38,27 @@ pub struct View {
     pub is_homepage: bool,
 }
 
+impl Default for View {
+    /// # Default for View
+    ///
+    /// ## Returns
+    /// * `View` - A new View with the visibility set to `VisibilityHidden`
+    fn default() -> Self {
+        View {
+            id: None,
+            created_at: None,
+            updated_at: None,
+            visibility: ViewVisibilityTypes::VisibilityHidden,
+            title: String::new(),
+            content_body: None,
+            content_head: None,
+            description: None,
+            route: String::new(),
+            is_homepage: false,
+        }
+    }
+}
+
 /// # "ViewVisibilityTypes" model
 ///
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.

@@ -180,7 +180,7 @@ cfg_if::cfg_if! {
                         // If we've attempted to generate a unique URL path 10 times, stop
                         i += 1;
                         if i >= 10 {
-                            Err(PerseError::new(ErrorTypes::InternalError, "Failed to determine a unique URL path after 10 attempts".to_string()))?;
+                            Err(PerseError::new(ErrorTypes::InternalError, "Failed to determine a unique route for the requested URL".to_string()))?;
                         }
 
                         // Append a number to the end of the route

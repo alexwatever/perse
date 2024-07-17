@@ -17,6 +17,12 @@ pub fn Create() -> impl IntoView {
     // Signal for the create view response
     let create_view_signal = Signal::derive(move || create_view_api.value().get());
 
+    // Action for the get all views signal
+    let create_view_signal_action = move || {
+        // Get the signals value
+        create_view_signal.get()
+    };
+
     // TODO: Validate the Create View client request
     let create_view_validation = move |_event| {
         // let data = CreateView::from_event(&_event).expect("to parse form data");
@@ -45,13 +51,8 @@ pub fn Create() -> impl IntoView {
 
     // Action for the get all views signal
     let views_list_signal_action = move || {
-        get_all_views_signal_resource
-            // Get the signals value
-            .get()
-            // This loading state will only show before the first load
-            .unwrap_or_else(|| Ok(vec![]))
-            .map_err(|err| format!("Server returned an error: {err:?}"))
-            .unwrap()
+        // Get the signals value
+        get_all_views_signal_resource.get()
     };
 
     // ## Signal Effects
@@ -125,37 +126,46 @@ pub fn Create() -> impl IntoView {
 
                         <div>
                             <Transition fallback=loader>
-                                // Action for the create view signal
-                                {move || {
-                                    // Get the Create View response
-                                    create_view_signal
-                                        .get()
-                                        .map(|response| {
-                                            response
-                                                // View for the form result
-                                                .map(|view| view! {
-                                                    <br />
-                                                    <section>
-                                                        <header><h2>"Success"</h2></header>
-                                                        <p>"Your new view has been created!"</p>
-                                                        <p>
-                                                            <a href={format!("/{}", view.route)} title={view.title.clone()}>
-                                                                {format!("/{} ({})", view.route, view.title)}
-                                                            </a>
-                                                        </p>
-                                                    </section>
+                                <br />
+                                <section>
+                                    {move || {
+                                        // Action for the Create View signal
+                                        create_view_signal_action()
+                                            .map(|response| {
+                                                response
+                                                    // View for the Create View result
+                                                    .map(|view| {
+                                                        Some(view! {
+                                                            <header><h2>"Success"</h2></header>
+                                                            <main>
+                                                                <p>"Your new view has been created!"</p>
+                                                                <p>
+                                                                    <a href={format!("/{}", view.route)} title={view.title.clone()}>
+                                                                        {format!("/{} ({})", view.route, view.title)}
+                                                                    </a>
+                                                                </p>
+                                                            </main>
+                                                        })
+                                                        .collect_view()
+                                                    })
+                                                    // View for the Create View server error
+                                                    .unwrap_or_else(|err| {
+                                                        Some(view! {
+                                                            <header><h2>"Something went wrong"</h2></header>
+                                                            <p>{err.to_string()}</p>
+                                                        })
+                                                        .collect_view()
+                                                    })
+                                            })
+                                            // Initial loading state
+                                            .unwrap_or_else(|| {
+                                                Some({
+                                                    view! {}
                                                 })
-                                                // View for the form error
-                                                .unwrap_or_else(|err| view! {
-                                                    <br />
-                                                    <section>
-                                                        <header><h2>"Something went wrong"</h2></header>
-                                                        <p>{err.to_string()}</p>
-                                                    </section>
-                                                })
-                                        })
-                                        .collect_view()
-                                }}
+                                                .collect_view()
+                                            })
+                                    }}
+                                </section>
                             </Transition>
                         </div>
                     </ActionForm>
@@ -167,23 +177,55 @@ pub fn Create() -> impl IntoView {
 
                     <main>
                         <Transition fallback=loader>
-                            <ul>
-                                // Action for the get views signal
-                                {move || {
-                                    views_list_signal_action()
-                                        .into_iter()
-                                        .map(|view| {
-                                            view! {
-                                                <li>
-                                                    <a href={format!("/{}", view.route)} title={view.title.clone()}>
-                                                        {format!("/{} ({})", view.route, view.title)}
-                                                    </a>
-                                                </li>
-                                            }
+                            {move || {
+                                // Action for the Get Views signal
+                                views_list_signal_action()
+                                    .map(|response| {
+                                        response
+                                            // View for the Get Views result
+                                            .map(|views| {
+                                                views.into_iter()
+                                                    // Iterate through Views
+                                                    .map(|view| {
+                                                        view! {
+                                                            <li>
+                                                                <a href={format!("/{}", view.route)} title={view.title.clone()}>
+                                                                    {format!("/{} ({})", view.route, view.title)}
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                    })
+                                                    .collect_view()
+                                            })
+                                            // View for the server error
+                                            .unwrap_or_else(|err| {
+                                                Some({
+                                                    view! {
+                                                        <br />
+                                                        <section>
+                                                            <header><h2>"Something went wrong"</h2></header>
+                                                            <p>{err.to_string()}</p>
+                                                        </section>
+                                                    }
+                                                })
+                                                .collect_view()
+                                            })
                                         })
-                                        .collect_view()
+                                        // Initial loading state
+                                        .unwrap_or_else(|| {
+                                            Some({
+                                                view! {
+                                                    <br />
+                                                    <section>
+                                                        <main>
+                                                            <p>"..."</p>
+                                                        </main>
+                                                    </section>
+                                                }
+                                            })
+                                            .collect_view()
+                                        })
                                 }}
-                            </ul>
                         </Transition>
                     </main>
                 </section>
