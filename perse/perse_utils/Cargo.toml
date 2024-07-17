@@ -5,7 +5,7 @@
 
 [package]
 name = "perse_utils"
-version = "0.1.0"
+version = "0.2.0"
 readme.workspace = true
 description.workspace = true
 repository.workspace = true
@@ -17,6 +17,7 @@ edition.workspace = true
 cfg-if.workspace = true
 parse-display.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 server_fn.workspace = true
 sqlx = { workspace = true, optional = true }
 tracing.workspace = true
