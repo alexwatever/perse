@@ -17,7 +17,7 @@ use validator::Validate;
 /// * `route` - Route of the View
 /// * `is_homepage` - Whether the View is the homepage
 // #[cfg(feature = "ssr")]
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, PartialEq, Clone, Debug)]
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct View {
     pub id: Option<uuid::Uuid>,
@@ -62,7 +62,7 @@ impl Default for View {
 /// # "ViewVisibilityTypes" model
 ///
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
-#[derive(Deserialize, Serialize, FromStr, Clone, Debug)]
+#[derive(Deserialize, Serialize, PartialEq, FromStr, Clone, Debug)]
 #[serde(rename_all = "PascalCase")]
 #[cfg_attr(feature = "ssr", derive(sqlx::Type))]
 #[cfg_attr(

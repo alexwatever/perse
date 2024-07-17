@@ -1,7 +1,6 @@
 use leptos::*;
 use leptos_router::*;
 use perse_data::views::schema::{CreateView, View as PerseView};
-use tracing::debug;
 
 // # Components
 use crate::views::components::{loader::Loader, PerseComponent};
@@ -9,60 +8,65 @@ use crate::views::components::{loader::Loader, PerseComponent};
 /// # View for "Create View"
 #[component]
 pub fn Create() -> impl IntoView {
-    // ## Create View signal
+    // ## Server Functions
 
-    // Create a Frontend API for Create View
+    // Create a Frontend API for the Create View request
     let create_view_api = Action::<CreateViewHandler, _>::server();
+
+    // Create a Server API for the Get Views request
+    create_server_action::<GetAllHandler>();
+
+    // ## Signals
 
     // Signal for the create view response
     let create_view_signal = Signal::derive(move || create_view_api.value().get());
 
-    // Action for the get all views signal
+    // Signal for the get all views response
+    let (get_all_views_signal, set_all_views_signal) = create_signal(0);
+
+    // ### Create View signal
+
+    // Resource for tracking the Create View signal
+    let create_view_signal_resource = create_resource(
+        // Signal source
+        create_view_signal,
+        // Loader
+        |create_view_response| async move { create_view_response },
+    );
+
+    // Action for the Create View signal
     let create_view_signal_action = move || {
-        // Get the signals value
-        create_view_signal.get()
+        create_view_signal_resource.get().and_then(|response| {
+            // Refresh the Get Views View
+            if response.is_some() {
+                set_all_views_signal.update(|n| *n += 1);
+            }
+
+            response
+        })
     };
 
     // TODO: Validate the Create View client request
     let create_view_validation = move |_event| {
         // let data = CreateView::from_event(&_event).expect("to parse form data");
-        // // silly example of validation: if the todo is "nope!", nope it
         // if data.title == "nope!" {
         //     // ev.prevent_default() will prevent form submission
         //     ev.prevent_default();
         // }
     };
 
-    // ## Get All Views signal
+    // ### Get Views signal
 
-    // Create a Server API for Get All Views
-    create_server_action::<GetAllHandler>();
-
-    // Signal for the get all views response
-    let (get_all_views_signal, set_all_views_signal) = create_signal(0);
-
-    // Resource for tracking the get all views signal
+    // Resource for tracking the Get Views signal
     let get_all_views_signal_resource = create_resource(
         // Signal source
         get_all_views_signal,
         // Loader
-        |signal_count| async move { get_all_views(signal_count).await },
+        |_signal_count| async move { get_all_views().await },
     );
 
-    // Action for the get all views signal
-    let views_list_signal_action = move || {
-        // Get the signals value
-        get_all_views_signal_resource.get()
-    };
-
-    // ## Signal Effects
-    Effect::new_isomorphic(move |_| {
-        // Log the signals
-        debug!("`create_view_signal`: {:?}", create_view_signal.get());
-
-        // Update the All Views list
-        set_all_views_signal.update(|n| *n += 1);
-    });
+    // Action for the Get Views signal
+    let views_list_signal_action = move || get_all_views_signal_resource.get();
 
     // ## Views
 
@@ -132,8 +136,8 @@ pub fn Create() -> impl IntoView {
                                         // Action for the Create View signal
                                         create_view_signal_action()
                                             .map(|response| {
+                                                // View for the Create View result
                                                 response
-                                                    // View for the Create View result
                                                     .map(|view| {
                                                         Some(view! {
                                                             <header><h2>"Success"</h2></header>
@@ -159,10 +163,7 @@ pub fn Create() -> impl IntoView {
                                             })
                                             // Initial loading state
                                             .unwrap_or_else(|| {
-                                                Some({
-                                                    view! {}
-                                                })
-                                                .collect_view()
+                                                Some(view! {}).collect_view()
                                             })
                                     }}
                                 </section>
@@ -273,7 +274,7 @@ async fn create_view(data: CreateView) -> Result<PerseView, ServerFnError> {
 /// ## Returns  
 /// * `Result<Vec<View>, ServerFnError>` - A list of views
 #[server(name = GetAllHandler, prefix = "/api/v1", endpoint = "views")]
-async fn get_all_views(_signal_count: i32) -> Result<Vec<PerseView>, ServerFnError> {
+async fn get_all_views() -> Result<Vec<PerseView>, ServerFnError> {
     use perse_data::{Database, PerseDatabaseModels};
 
     // Get a database connection
