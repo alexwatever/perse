@@ -73,7 +73,7 @@ pub fn Create() -> impl IntoView {
     // ## Views
 
     // Components
-    let loader = Loader::create;
+    let loader = move || Loader::build(None).into_view();
 
     // Main View
     const APP_NAME: &str = "perse";
@@ -140,29 +140,22 @@ pub fn Create() -> impl IntoView {
                                             .map(|response| {
                                                 response
                                                     // View for the Create View result
-                                                    .map(|view| {
-                                                        Some(view! {
-                                                            <header><h2>"Success"</h2></header>
-                                                            <main>
-                                                                <p>"Your new view has been created!"</p>
-                                                                <ul>
-                                                                    {ViewList::build_from(view)}
-                                                                </ul>
-                                                            </main>
-                                                        })
-                                                        .collect_view()
-                                                    })
+                                                    .map(|view| view! {
+                                                        <header><h2>"Success"</h2></header>
+                                                        <main>
+                                                            <p>"Your new view has been created!"</p>
+                                                            {ViewList::build(Some(view))}
+                                                        </main>
+                                                    }.into_view())
                                                     // View for the Create View server error
-                                                    .unwrap_or_else(|err| {
-                                                        Some(view! {
-                                                            <header><h4>"Something went wrong"</h4></header>
-                                                            <p>{err.to_string()}</p>
-                                                        })
-                                                        .collect_view()
-                                                    })
+                                                    .unwrap_or_else(|err| view! {
+                                                        <header><h4>"Something went wrong"</h4></header>
+                                                        <p>{err.to_string()}</p>
+                                                    }
+                                                    .into_view())
                                             })
                                             // Initial state
-                                            .unwrap_or_else(|| Some(InitialState::create()).collect_view())
+                                            .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
                                     }}
                                 </section>
                             </Transition>
@@ -175,33 +168,33 @@ pub fn Create() -> impl IntoView {
 
                     <main>
                         <Transition fallback=loader>
-                            <ul>
-                                {move || {
-                                    // Action for the Get Views signal
-                                    views_list_signal_action()
-                                        .map(|response| {
-                                            response
-                                                // View for the Get Views result
-                                                .map(ViewList::build_from_iter)
-                                                .map(|views| views.collect_view())
-                                                // View for the server error
-                                                .unwrap_or_else(|err| {
-                                                    Some({
-                                                        view! {
-                                                            <br />
-                                                            <section>
-                                                                <header><h4>"Something went wrong"</h4></header>
-                                                                <p>{err.to_string()}</p>
-                                                            </section>
-                                                        }
-                                                    })
-                                                    .collect_view()
+                            {move || {
+                                // Action for the Get Views signal
+                                views_list_signal_action()
+                                    .map(|response| {
+                                        response
+                                            // View for the Get Views result
+                                            .map(|views| {
+                                                ViewList::build_iter(Some(views)).into_view()
+                                            })
+                                            // View for the server error
+                                            .unwrap_or_else(|err| {
+                                                Some({
+                                                    view! {
+                                                        <br />
+                                                        <section>
+                                                            <header><h4>"Something went wrong"</h4></header>
+                                                            <p>{err.to_string()}</p>
+                                                        </section>
+                                                    }
                                                 })
-                                        })
-                                        // Initial state
-                                        .unwrap_or_else(|| Some(InitialState::create()).collect_view())
-                                }}
-                            </ul>
+                                                .collect_view()
+                                            })
+                                    })
+                                    // Initial state
+                                    .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
+                                }
+                            }
                         </Transition>
                     </main>
                 </section>
