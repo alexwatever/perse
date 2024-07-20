@@ -3,9 +3,11 @@ use leptos_router::*;
 use perse_data::views::schema::{CreateView, View as PerseView};
 
 // # Components
-use crate::views::components::{
-    initial_state::InitialState, loader::Loader, view_list::ViewList, PerseComponent,
+use super::components::{
+    initial_state::InitialState, loader::Loader, navbar::NavBar, view_list::ViewList,
+    PerseComponent,
 };
+use crate::APP_NAME;
 
 /// # View for "Create View"
 #[component]
@@ -76,128 +78,124 @@ pub fn Create() -> impl IntoView {
     let loader = move || Loader::build(None).into_view();
 
     // Main View
-    const APP_NAME: &str = "perse";
     view! {
-        <nav id="navbar">
-            <a id="brand-link" href="/" aria-label=APP_NAME><strong>{APP_NAME}</strong></a>
-        </nav>
+        {NavBar::build(None)}
 
         <article class=move || { format!("{APP_NAME}-block") }>
             <header><h1>"Create View"</h1></header>
 
             <main>
-                <section>
-                    <ActionForm action=create_view_api on:submit=create_view_validation>
+                <ActionForm action=create_view_api on:submit=create_view_validation>
+                    <div>
                         <div>
-                            <div>
-                                <label for="visibility">"Visibility"</label>
-                                <select id="visibility" name="data[visibility]">
-                                    <option value="VisibilityPublic">"Public"</option>
-                                    <option value="VisibilityHidden">"Hidden"</option>
-                                    <option value="VisibilityUnlisted">"Unlisted"</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="title">"Title"<sup> "*"</sup></label>
-                                <input id="title" name="data[title]" type="text" placeholder="About Me" required />
-                            </div>
-                            <div>
-                                <label for="content_body">"Body Content"</label>
-                                <textarea id="content_body" name="data[content_body]" placeholder="It was a bright cold day in April..."></textarea>
-                            </div>
-                            <div>
-                                <label for="content_head">"Head Content"</label>
-                                <textarea id="content_head" name="data[content_head]" placeholder=""></textarea>
-                            </div>
-                            <div>
-                                <label for="description">"Description"</label>
-                                <textarea id="description" name="data[description]" placeholder=""></textarea>
-                            </div>
-                            <div>
-                                <label for="route">"Route"</label>
-                                <input id="route" name="data[route]" type="text" placeholder="about-me" required />
-                            </div>
-                            <br />
-                            <div>
-                                <label for="is_homepage">"Is this the new homepage?"</label>
-                                <input id="is_homepage" name="data[is_homepage]" type="checkbox" />
-                            </div>
-                            <br />
+                            <label for="visibility">"Visibility"</label>
+                            <select id="visibility" name="data[visibility]">
+                                <option value="VisibilityPublic">"Public"</option>
+                                <option value="VisibilityHidden">"Hidden"</option>
+                                <option value="VisibilityUnlisted">"Unlisted"</option>
+                            </select>
                         </div>
-
                         <div>
-                            <button type="submit" aria-label="Save View">"Save"</button>
-                            <br />
+                            <label for="title">"Title"<sup> "*"</sup></label>
+                            <input id="title" name="data[title]" type="text" placeholder="About Me" required />
                         </div>
-
                         <div>
-                            <Transition fallback=loader>
-                                <br />
-                                <section>
-                                    {move || {
-                                        // Action for the Create View signal
-                                        create_view_signal_action()
-                                            .map(|response| {
-                                                response
-                                                    // View for the Create View result
-                                                    .map(|view| view! {
-                                                        <header><h2>"Success"</h2></header>
-                                                        <main>
-                                                            <p>"Your new view has been created!"</p>
-                                                            {ViewList::build(Some(view))}
-                                                        </main>
-                                                    }.into_view())
-                                                    // View for the Create View server error
-                                                    .unwrap_or_else(|err| view! {
-                                                        <header><h4>"Something went wrong"</h4></header>
-                                                        <p>{err.to_string()}</p>
-                                                    }
-                                                    .into_view())
-                                            })
-                                            // Initial state
-                                            .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
-                                    }}
-                                </section>
-                            </Transition>
+                            <label for="content_body">"Body Content"</label>
+                            <textarea id="content_body" name="data[content_body]" placeholder="It was a bright cold day in April..."></textarea>
                         </div>
-                    </ActionForm>
-                </section>
+                        <div>
+                            <label for="content_head">"Head Content"</label>
+                            <textarea id="content_head" name="data[content_head]" placeholder=""></textarea>
+                        </div>
+                        <div>
+                            <label for="description">"Description"</label>
+                            <textarea id="description" name="data[description]" placeholder=""></textarea>
+                        </div>
+                        <div>
+                            <label for="route">"Route"</label>
+                            <input id="route" name="data[route]" type="text" placeholder="about-me" required />
+                        </div>
+                        <br />
+                        <div>
+                            <label for="is_homepage">"Is this the new homepage?"</label>
+                            <input id="is_homepage" name="data[is_homepage]" type="checkbox" />
+                        </div>
+                        <br />
+                    </div>
 
-                <section>
-                    <header><h2>"Your Views"</h2></header>
+                    <div>
+                        <button type="submit" aria-label="Save View">"Save"</button>
+                        <br />
+                    </div>
 
-                    <main>
+                    <aside>
                         <Transition fallback=loader>
+                            <br />
+                            // Action for the Create View signal
                             {move || {
-                                // Action for the Get Views signal
-                                views_list_signal_action()
+                                create_view_signal_action()
                                     .map(|response| {
                                         response
-                                            // View for the Get Views result
-                                            .map(|views| {
-                                                ViewList::build_iter(Some(views)).into_view()
-                                            })
-                                            // View for the server error
-                                            .unwrap_or_else(|err| {
-                                                Some({
-                                                    view! {
-                                                        <br />
-                                                        <section>
-                                                            <header><h4>"Something went wrong"</h4></header>
-                                                            <p>{err.to_string()}</p>
-                                                        </section>
-                                                    }
-                                                })
-                                                .collect_view()
-                                            })
+                                            // View for the Create View result
+                                            .map(|view| view! {
+                                                <header><h2>"Success"</h2></header>
+                                                <main>
+                                                    <p>"Your new view has been created!"</p>
+                                                    <main>
+                                                        {ViewList::build(Some(view))}
+                                                    </main>
+                                                </main>
+                                            }.into_view())
+                                            // View for the Create View server error
+                                            .unwrap_or_else(|err| view! {
+                                                <header><h4>"Something went wrong"</h4></header>
+                                                <main>
+                                                    <p>{err.to_string()}</p>
+                                                </main>
+                                            }
+                                            .into_view())
                                     })
                                     // Initial state
                                     .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
-                                }
-                            }
+                            }}
                         </Transition>
-                    </main>
-                </section>
+                    </aside>
+                </ActionForm>
+
+                <Transition fallback=loader>
+                    <section>
+                        <header><h2>"Your Views"</h2></header>
+
+                        <main>
+                        // Action for the Get Views signal
+                        {move || {
+                            views_list_signal_action()
+                                .map(|response| {
+                                    response
+                                        // View for the Get Views result
+                                        .map(|views| {
+                                            ViewList::build_iter(Some(views)).into_view()
+                                        })
+                                        // View for the server error
+                                        .unwrap_or_else(|err| {
+                                            Some({
+                                                view! {
+                                                    <br />
+                                                    <section>
+                                                        <header><h4>"Something went wrong"</h4></header>
+                                                        <p>{err.to_string()}</p>
+                                                    </section>
+                                                }
+                                            })
+                                            .collect_view()
+                                        })
+                                })
+                                // Initial state
+                                .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
+                            }}
+                        </main>
+                    </section>
+                </Transition>
             </main>
         </article>
     }

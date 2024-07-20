@@ -169,19 +169,6 @@ body > main {
   flex-direction: column;
   width: 50rem;
   margin: 1rem auto;
-
-  nav#navbar {
-    display: flex;
-    place-content: center;
-    margin-bottom: 1rem;
-  
-    > a#brand-link {
-      font-size: 2rem;
-      font-weight: 600;
-      color: $color-brand-hex;
-      text-decoration: none;
-    }
-  }
 }
 
 

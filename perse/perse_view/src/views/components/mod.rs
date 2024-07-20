@@ -3,6 +3,7 @@ use leptos::{view, IntoView};
 // # Modules
 pub mod initial_state;
 pub mod loader;
+pub mod navbar;
 pub mod view_list;
 
 /// # Component Trait

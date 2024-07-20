@@ -2,7 +2,7 @@ use leptos::{view, CollectView, IntoView};
 
 // # Modules
 use super::{PerseComponent, PerseStyle};
-use perse_data::views::schema::View;
+use perse_data::views::schema::{View, ViewVisibilityTypes};
 
 // # View List Component
 pub struct ViewList {}
@@ -24,7 +24,7 @@ impl PerseComponent for ViewList {
             <ul class="view_list">
                 {value.map(|view| view! {
                     <li class="view_list-item">
-                        <a href={format!("/{}", view.route)} title={view.title.clone()}>
+                        <a href={format!("/{}", view.route)} title={view.title.clone()} aria-label={view.title.clone()}>
                             {format!("/{} ({})", view.route, view.title)}
                         </a>
                     </li>
@@ -49,8 +49,23 @@ impl PerseComponent for ViewList {
                 values
                     .map(|views| views.into_iter().map(|view| view! {
                         <li class="view_list-item">
-                            <a href={format!("/{}", view.route)} title={view.title.clone()}>
-                                {format!("/{} ({})", view.route, view.title)}
+                            <a href={format!("/{}", view.route)} title={view.title.clone()} aria-label={view.title.clone()}>
+                                {
+                                    format!(
+                                        "/{} ({}), {}{}",
+                                        view.route,
+                                        view.title,
+                                        match view.visibility {
+                                            ViewVisibilityTypes::VisibilityPublic => "(Public)",
+                                            ViewVisibilityTypes::VisibilityUnlisted => "(Unlisted)",
+                                            ViewVisibilityTypes::VisibilityHidden => "(Hidden)",
+                                        },
+                                        match view.is_homepage {
+                                            true => ", (Homepage)",
+                                            false => "",
+                                        },
+                                    )
+                                }
                             </a>
                         </li>
                     }).collect_view())
@@ -66,7 +81,38 @@ impl PerseComponent for ViewList {
     fn style() -> impl IntoView {
         view! {{
             let css: &str = "
-            .view_list {
+            ul.view_list {
+                display: flex;
+                flex-direction: column;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            ul.view_list li.view_list-item {
+                display: flex;
+                flex-direction: column;
+                margin: 0.5rem 0;
+                padding: 0;
+                background: white;
+                border: 1px dotted black;
+                border-radius: 5px;
+                font-size: 1.2rem;
+                line-height: 1.2;
+                color: #222;
+            }
+
+            ul.view_list li.view_list-item > a {
+                padding: 0.5rem;
+                text-decoration: none;
+                color: #222;
+                cursor: pointer;
+            }
+
+            ul.view_list li.view_list-item > a:hover,
+            ul.view_list li.view_list-item > a:focus,
+            ul.view_list li.view_list-item > a:active {
+                text-decoration: underline;
             }
             ";
 
