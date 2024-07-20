@@ -141,6 +141,7 @@ cfg_if::cfg_if! {
                     route,
                     is_homepage
                     FROM views
+                    ORDER BY is_homepage DESC NULLS LAST
                     ",
                 )
                 .fetch_all(conn)
