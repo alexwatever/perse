@@ -41,19 +41,6 @@ This project is part of the slow code movement and is very much in development.
 ```
 cargo install cargo-leptos
 ```
-
-#### Installation
-
-```
-
-```
-
-#### Build Site
-
-```
-flyctl proxy 5432:5432 -a perse-db
-cargo leptos watch
-```
 <br>
 
 
@@ -64,7 +51,7 @@ Use [**SQLx CLI:**](https://crates.io/crates/sqlx-cli) to manage Migrations.
 cargo install sqlx-cli
 ```
 
-Update your [**rust-analyzer:**](https://crates.io/crates/sqlx-cli) configuration to include the following, to enable intellisense for both SSR and CSR.  
+Update your VS Code [**rust-analyzer:**](https://crates.io/crates/sqlx-cli) configuration to include the following, to enable intellisense for both SSR and CSR.  
 ```
 "rust-analyzer.cargo.features": "all",
 ```
