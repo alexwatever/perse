@@ -5,7 +5,7 @@
 
 [package]
 name = "perse_controller"
-version = "0.2.0"
+version = "0.2.1"
 readme.workspace = true
 description.workspace = true
 repository.workspace = true
@@ -14,12 +14,13 @@ license.workspace = true
 edition.workspace = true
 
 [dependencies]
-perse_view = { workspace = true }
-
-leptos = { workspace = true }
-leptos_meta = { workspace = true }
+perse_data.workspace = true
+perse_utils.workspace = true
+perse_view.workspace = true
+leptos.workspace = true
 leptos_actix = { workspace = true, optional = true }
-leptos_router = { workspace = true }
+leptos_meta.workspace = true
+leptos_router.workspace = true
 
 [features]
 hydrate = [

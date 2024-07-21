@@ -6,10 +6,101 @@ cfg_if::cfg_if! {
         // # Modules
         use super::{
             super::{PerseApiRequests, PerseDatabaseModels},
-            schema::{CreateView, View, ViewVisibilityTypes},
+            schema::{NewView, View, ViewVisibilityTypes},
         };
 
         impl View {
+            /// # Retrieve a the Homepage View from the Database
+            ///
+            /// ## Fields
+            /// * `conn` - The database connection to use
+            ///
+            /// ## Returns
+            /// * `Result<Self, PerseError>` - The Homepage View
+            pub async fn get_homepage(conn: &PgPool) -> Result<Self, PerseError> {
+                query_as!(
+                    Self,
+                    "
+                    SELECT 
+                    id,
+                    created_at,
+                    updated_at,
+                    visibility AS \"visibility: ViewVisibilityTypes\",
+                    title,
+                    content_body,
+                    content_head,
+                    description,
+                    route,
+                    is_homepage
+                    FROM views
+                    WHERE visibility = $1 AND is_homepage = TRUE
+                    ",
+                    // Only retrieve a route that is visible to the public
+                    ViewVisibilityTypes::VisibilityPublic as ViewVisibilityTypes,
+                )
+                .fetch_one(conn)
+                .await
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to retrieve the Homepage View: {err}")))
+            }
+
+            /// # Retrieve a View from the Database by Route, if one exists
+            ///
+            /// ## Fields
+            /// * `conn` - The database connection to use
+            ///
+            /// ## Returns
+            /// * `Result<Self, PerseError>` - The View
+            pub async fn get_by_route(conn: &PgPool, route: &str) -> Result<Self, PerseError> {
+                query_as!(
+                    Self,
+                    "
+                    SELECT 
+                    id,
+                    created_at,
+                    updated_at,
+                    visibility AS \"visibility: ViewVisibilityTypes\",
+                    title,
+                    content_body,
+                    content_head,
+                    description,
+                    route,
+                    is_homepage
+                    FROM views
+                    WHERE visibility = $1 AND route = $2
+                    ",
+                    // Only retrieve a route that is visible to the public
+                    ViewVisibilityTypes::VisibilityPublic as ViewVisibilityTypes,
+                    route,
+                )
+                .fetch_one(conn)
+                .await
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to retrieve View by Route: {err}")))
+            }
+
+            // /// # Retrieve a collection of all active routes from the Database
+            // ///
+            // /// ## Returns
+            // /// * `Result<Vec<String>, PerseError>` - A collection of all active routes
+            // pub async fn _get_active_routes() -> Result<Vec<String>, PerseError> {
+            //     Ok(
+            //         query_scalar::<_, String>(
+            //             r#"
+            //             SELECT
+            //             route
+            //             FROM views
+            //             WHERE visibility = $1
+            //             -- Order by is_homepage DESC NULLS LAST to ensure that the homepage is always first
+            //             ORDER BY is_homepage DESC NULLS LAST
+            //             "#
+            //         )
+            //         // Only retrieve routes that are visible to the public
+            //         .bind(ViewVisibilityTypes::VisibilityPublic as ViewVisibilityTypes)
+            //         // Get a database connection
+            //         .fetch_all(Database::get()?)
+            //         .await?
+            //     )
+            // }
+
             /// # Update the homepage view
             ///
             /// ## Fields
@@ -26,13 +117,13 @@ cfg_if::cfg_if! {
                 query!("UPDATE views SET is_homepage = FALSE WHERE is_homepage = TRUE")
                     .execute(&mut **transaction)
                     .await
-                    .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to update the homepage view: {err}")))?;
+                    .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to remove the old homepage view: {err}")))?;
 
                 // Set the new homepage view
                 query!("UPDATE views SET is_homepage = TRUE WHERE id = $1", view_id)
                     .execute(&mut **transaction)
                     .await
-                    .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to set the new homepage view: {err}")))?;
+                    .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to update the new homepage view: {err}")))?;
 
                 Ok(())
             }
@@ -45,7 +136,7 @@ cfg_if::cfg_if! {
             ///
             /// ## Fields
             /// * `transaction` - The database transaction in use
-            /// * `view` - The `CreateView` to insert into the Database
+            /// * `view` - The `NewView` to insert into the Database
             ///
             /// ## Returns
             /// * `Result<Self, PerseError>` - The newly created View
@@ -68,7 +159,7 @@ cfg_if::cfg_if! {
                 )
                 .fetch_one(&mut **transaction)
                 .await
-                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to create View #{view:?}: {err}")))?;
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to create View: {err}")))?;
 
                 // Update this View if it's been declared as the new home page
                 if view.is_homepage {
@@ -94,7 +185,7 @@ cfg_if::cfg_if! {
                     .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to parse the ID as a UUID: {err}")))?;
 
                 // Retrieve the View record from the database
-                query_as!(
+                let query = query_as!(
                     Self,
                     "
                     SELECT 
@@ -115,7 +206,9 @@ cfg_if::cfg_if! {
                 )
                 .fetch_one(conn)
                 .await
-                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Unable to retrieve View #{id}: {err}")))
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to retrieve View by ID: {err}")))?;
+
+                Ok(query)
             }
 
             /// # Retrieve a collection of all Views from the Database
@@ -126,7 +219,7 @@ cfg_if::cfg_if! {
             /// ## Returns
             /// * `Result<Vec<View>, PerseError>` - A collection of all Views
             async fn get_all(conn: &PgPool) -> Result<Vec<View>, PerseError> {
-                query_as!(
+                let query =query_as!(
                     Self,
                     "
                     SELECT
@@ -141,19 +234,22 @@ cfg_if::cfg_if! {
                     route,
                     is_homepage
                     FROM views
+                    ORDER BY is_homepage DESC NULLS LAST
                     ",
                 )
                 .fetch_all(conn)
                 .await
-                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to get the Views collection: {err}")))
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to retrieve all Views: {err}")))?;
+
+                Ok(query)
             }
         }
 
-        impl CreateView {
+        impl NewView {
             /// # Determine the URL path for a new View
             ///
             /// ## Fields
-            /// * `data` - The `CreateView` data to generate the URL path from
+            /// * `data` - The `NewView` data to generate the URL path from
             ///
             /// ## Returns
             /// * `Result<String, PerseError>` - The URL path for the new View
@@ -195,14 +291,14 @@ cfg_if::cfg_if! {
             }
         }
 
-        impl PerseApiRequests for CreateView {
-            /// # Validate the incoming `CreateView` API request
+        impl PerseApiRequests for NewView {
+            /// # Validate the incoming `NewView` API request
             ///
             /// ## Fields
-            /// * `self` - The `CreateView` to validate
+            /// * `self` - The `NewView` to validate
             ///
             /// ## Returns
-            /// * `Result<bool, PerseError>` - Whether the `CreateView` is valid
+            /// * `Result<bool, PerseError>` - Whether the `NewView` is valid
             fn is_valid(&self) -> Result<(), PerseError> {
                 use validator::Validate;
 
