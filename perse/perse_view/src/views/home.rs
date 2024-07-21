@@ -40,23 +40,20 @@ pub fn Home() -> impl IntoView {
     view! {
         <Transition fallback=|| Loader::build(None).into_view()>
             // Action for the Get Homepage signal
-            {move || {
-                get_home_signal_action()
-                    // View for the Get Homepage result
-                    .map(|response| response.map(|view| view! {
-                            // Set Metadata
-                            <Title text=view.title />
-                            <Meta name="description" content=view.description.unwrap_or_default() />
+            {move || get_home_signal_action().map(|response| response.map(|view| view! {
+                    // Set Metadata
+                    <Title text=view.title />
+                    <Meta name="description" content=view.description.unwrap_or_default() />
 
-                            {view.content_body}
-                        }
-                        .into_view())
-                        // View for the server error
-                        .unwrap_or_else(|err| view! { <NotFound err=Some(err) /> }.into_view()
-                    ))
-                    // Initial state
-                    .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
-            }}
+                    {view.content_body}
+                }
+                .into_view())
+                // View for the server error
+                .unwrap_or_else(|err| view! { <NotFound err=Some(err) /> }.into_view()
+            ))
+            // Initial state
+            .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
+            }
         </Transition>
     }
 }

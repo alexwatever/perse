@@ -51,15 +51,6 @@ pub fn New() -> impl IntoView {
         })
     };
 
-    // TODO: Validate the New View client request
-    let new_view_validation = move |_event| {
-        // let data = NewView::from_event(&_event).expect("to parse form data");
-        // if data.title == "nope!" {
-        //     // ev.prevent_default() will prevent form submission
-        //     ev.prevent_default();
-        // }
-    };
-
     // ### Get Views signal
 
     // Resource for tracking the Get Views signal
@@ -94,7 +85,7 @@ pub fn New() -> impl IntoView {
                 <header><h1>"New View"</h1></header>
 
                 <main>
-                    <ActionForm action=new_view_api on:submit=new_view_validation>
+                    <ActionForm action=new_view_api>
                         <div>
                             <div>
                                 <label for="visibility">"Visibility"</label>
@@ -141,32 +132,29 @@ pub fn New() -> impl IntoView {
                             <Transition fallback=loader>
                                 <br />
                                 // Action for the New View signal
-                                {move || {
-                                    new_view_signal_action()
-                                        .map(|response| {
-                                            response
-                                                // View for the New View result
-                                                .map(|view| view! {
-                                                    <header><h2>"Success"</h2></header>
-                                                    <main>
-                                                        <p>"Your new view has been created!"</p>
-                                                        <main>
-                                                            {ViewList::build(Some(view))}
-                                                        </main>
-                                                    </main>
-                                                }.into_view())
-                                                // View for the New View server error
-                                                .unwrap_or_else(|err| view! {
-                                                    <header><h4>"Something went wrong"</h4></header>
-                                                    <main>
-                                                        <p>{err.to_string()}</p>
-                                                    </main>
-                                                }
-                                                .into_view())
-                                        })
-                                        // Initial state
-                                        .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
-                                }}
+                                {move || new_view_signal_action().map(|response| {
+                                    // View for the New View result
+                                    response.map(|view| view! {
+                                        <header><h2>"Success"</h2></header>
+                                        <main>
+                                            <p>"Your new view has been created!"</p>
+                                            <main>
+                                                {ViewList::build(Some(view))}
+                                            </main>
+                                        </main>
+                                    }.into_view())
+                                    // View for the New View server error
+                                    .unwrap_or_else(|err| view! {
+                                        <header><h4>"Something went wrong"</h4></header>
+                                        <main>
+                                            <p>{err.to_string()}</p>
+                                        </main>
+                                    }.into_view())
+                                })
+                                // Initial state
+                                .unwrap_or_else(|| {
+                                    Some(InitialState::build(None)).collect_view()
+                                })}
                             </Transition>
                         </aside>
                     </ActionForm>
@@ -176,32 +164,27 @@ pub fn New() -> impl IntoView {
                             <header><h2>"Your Views"</h2></header>
 
                             <main>
-                            // Action for the Get Views signal
-                            {move || {
-                                views_list_signal_action()
-                                    .map(|response| {
-                                        response
-                                            // View for the Get Views result
-                                            .map(|views| {
-                                                ViewList::build_iter(Some(views)).into_view()
-                                            })
-                                            // View for the server error
-                                            .unwrap_or_else(|err| {
-                                                Some({
-                                                    view! {
-                                                        <br />
-                                                        <section>
-                                                            <header><h4>"Something went wrong"</h4></header>
-                                                            <p>{err.to_string()}</p>
-                                                        </section>
-                                                    }
-                                                })
-                                                .collect_view()
-                                            })
+                                // Action for the Get Views signal
+                                {move || views_list_signal_action().map(|response| {
+                                    // View for the Get Views result
+                                    response.map(|views| {
+                                        ViewList::build_iter(Some(views)).into_view()
                                     })
-                                    // Initial state
-                                    .unwrap_or_else(|| Some(InitialState::build(None)).collect_view())
-                                }}
+                                    // View for the server error
+                                    .unwrap_or_else(|err| {
+                                        Some({ view! {
+                                            <br />
+                                            <section>
+                                                <header><h4>"Something went wrong"</h4></header>
+                                                <p>{err.to_string()}</p>
+                                            </section>
+                                        }}).collect_view()
+                                    })
+                                })
+                                // Initial state
+                                .unwrap_or_else(|| {
+                                    Some(InitialState::build(None)).collect_view()
+                                })}
                             </main>
                         </section>
                     </Transition>

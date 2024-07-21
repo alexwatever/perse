@@ -10,13 +10,13 @@ cfg_if::cfg_if! {
         };
 
         impl View {
-            /// # Retrieve a collection of all active routes from the Database
+            /// # Retrieve a the Homepage View from the Database
             ///
             /// ## Fields
             /// * `conn` - The database connection to use
             ///
             /// ## Returns
-            /// * `Result<Vec<String>, PerseError>` - A collection of all active routes
+            /// * `Result<Self, PerseError>` - The Homepage View
             pub async fn get_homepage(conn: &PgPool) -> Result<Self, PerseError> {
                 query_as!(
                     Self,
@@ -40,7 +40,41 @@ cfg_if::cfg_if! {
                 )
                 .fetch_one(conn)
                 .await
-                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to retrieve all active routes: {err}")))
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to retrieve the Homepage View: {err}")))
+            }
+
+            /// # Retrieve a View from the Database by Route, if one exists
+            ///
+            /// ## Fields
+            /// * `conn` - The database connection to use
+            ///
+            /// ## Returns
+            /// * `Result<Self, PerseError>` - The View
+            pub async fn get_by_route(conn: &PgPool, route: &str) -> Result<Self, PerseError> {
+                query_as!(
+                    Self,
+                    "
+                    SELECT 
+                    id,
+                    created_at,
+                    updated_at,
+                    visibility AS \"visibility: ViewVisibilityTypes\",
+                    title,
+                    content_body,
+                    content_head,
+                    description,
+                    route,
+                    is_homepage
+                    FROM views
+                    WHERE visibility = $1 AND route = $2
+                    ",
+                    // Only retrieve a route that is visible to the public
+                    ViewVisibilityTypes::VisibilityPublic as ViewVisibilityTypes,
+                    route,
+                )
+                .fetch_one(conn)
+                .await
+                .map_err(|err| PerseError::new(ErrorTypes::InternalError, format!("Failed to retrieve View by Route: {err}")))
             }
 
             // /// # Retrieve a collection of all active routes from the Database
