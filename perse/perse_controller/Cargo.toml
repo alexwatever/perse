@@ -5,7 +5,7 @@
 
 [package]
 name = "perse_controller"
-version = "0.2.0"
+version = "0.2.1"
 readme.workspace = true
 description.workspace = true
 repository.workspace = true
