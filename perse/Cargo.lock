@@ -2107,6 +2107,8 @@ dependencies = [
  "leptos_actix",
  "leptos_meta",
  "leptos_router",
+ "perse_data",
+ "perse_utils",
  "perse_view",
 ]
 
@@ -2150,6 +2152,7 @@ dependencies = [
  "http 1.1.0",
  "leptos",
  "leptos_actix",
+ "leptos_meta",
  "leptos_router",
  "perse_data",
  "perse_utils",

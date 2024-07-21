@@ -3,7 +3,8 @@ use leptos_meta::*;
 use leptos_router::*;
 
 // # Views
-use perse_view::views::{errors::NotFound, new::Create};
+// use perse_data::views::schema::View as PerseView;
+use perse_view::views::{errors::NotFound, home::Home, new::New};
 
 /// # Perse Controller
 
@@ -12,59 +13,42 @@ use perse_view::views::{errors::NotFound, new::Create};
 pub fn Controller() -> impl IntoView {
     // Load Metadata
     provide_meta_context();
-    let global_css: View = view! { <Stylesheet id="leptos" href="/pkg/perse.css"/> };
 
     // Setup Controller
-    if let Some(_routes) = get_user_routes() {
-        // With User Routes
-        init_controller(global_css)
-    } else {
-        // Fallback
-        init_fallback_controller(global_css)
-    }
-}
-
-/// ## Get User Routes
-fn get_user_routes() -> Option<Vec<&'static str>> {
-    let routes: Option<Vec<&'static str>> = None;
-    routes
+    init_controller()
 }
 
 /// ## Initialise the default Controller
-fn init_controller(global_css: View) -> Fragment {
+fn init_controller() -> impl IntoView {
     view! {
-        // Metadata
-        {global_css}
-        <Title text="Welcome to Perse"/>
-
         // Routes
         <Router>
-            <main>
-                <Routes>
-                    // Attach System Views
-                    <Route path="/p/create/view" view=Create/>
-                    <Route path="/*any" view=NotFound/>
-                </Routes>
-            </main>
-        </Router>
-    }
-}
+            <Routes>
+                // Load the Home Page first
+                <Route
+                    path=""
+                    view=Home
+                />
 
-/// ## Initialise the fallback Controller
-fn init_fallback_controller(global_css: View) -> Fragment {
-    view! {
-        // Metadata
-        {global_css}
-        <Title text="Welcome to Perse"/>
+                // Setup the System routes
+                <Route
+                    path="/p/new"
+                    view=New
+                    ssr=SsrMode::Async
+                />
 
-        // Routes
-        <Router>
-            <main>
-                <Routes>
-                    // Attach System Views
-                    <Route path="/*any" view=Create/>
-                </Routes>
-            </main>
+                // Look for any other routes
+                <Route
+                    path="/*any"
+                    view=|| view! { <NotFound err=None /> }
+                    ssr=SsrMode::Async
+                />
+
+                // Setup the Database routes
+                // {routes.iter().map(|route| view! {
+                //     <Route path={format!("/{route}")} view=New />
+                // }).collect_view()}
+            </Routes>
         </Router>
     }
 }

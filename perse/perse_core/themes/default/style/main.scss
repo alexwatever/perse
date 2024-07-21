@@ -164,6 +164,19 @@ a:focus {
   text-decoration: underline;
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+body > header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 50rem;
+  margin: 1rem auto;
+}
+
 body > main {
   display: flex;
   flex-direction: column;

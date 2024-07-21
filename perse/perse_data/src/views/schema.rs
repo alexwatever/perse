@@ -1,4 +1,4 @@
-use parse_display::FromStr;
+use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -62,8 +62,9 @@ impl Default for View {
 /// # "ViewVisibilityTypes" model
 ///
 /// The enum name's and serde's `rename_all` are important, and must match with the field's `name` in the View.
-#[derive(Deserialize, Serialize, PartialEq, FromStr, Clone, Debug)]
+#[derive(Deserialize, Serialize, PartialEq, FromStr, Display, Clone, Debug)]
 #[serde(rename_all = "PascalCase")]
+#[display(style = "CamelCase")]
 #[cfg_attr(feature = "ssr", derive(sqlx::Type))]
 #[cfg_attr(
     feature = "ssr",
@@ -75,7 +76,7 @@ pub enum ViewVisibilityTypes {
     VisibilityHidden,
 }
 
-/// # "CreateView" request model
+/// # "NewView" request model
 ///
 /// The order, optional status, and type is important, and must match with the field order in the View.
 ///
@@ -89,7 +90,7 @@ pub enum ViewVisibilityTypes {
 /// * `route` - Route of the View
 /// * `is_homepage` - Whether the View is the homepage
 #[derive(Deserialize, Serialize, Clone, Validate, Debug)]
-pub struct CreateView {
+pub struct NewView {
     pub visibility: ViewVisibilityTypes,
     #[validate(length(min = 1, max = 255))]
     pub title: String,
@@ -105,8 +106,8 @@ pub struct CreateView {
 }
 
 #[cfg(feature = "ssr")]
-impl From<CreateView> for View {
-    fn from(view: CreateView) -> Self {
+impl From<NewView> for View {
+    fn from(view: NewView) -> Self {
         View {
             id: None,
             created_at: None,

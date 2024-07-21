@@ -7,6 +7,39 @@ use perse_data::views::schema::{View, ViewVisibilityTypes};
 // # View List Component
 pub struct ViewList {}
 
+// # View List Component
+impl ViewList {
+    /// # Build a link for a View
+    ///
+    /// ## Fields
+    /// * `view` - The `View` to build the link for
+    ///
+    /// ## Returns
+    /// * `impl IntoView` - The link as a `Fragment`
+    fn build_link(view: View) -> impl IntoView {
+        view! {
+            <a href={format!("/{}", view.route)} title={view.title.clone()} aria-label={view.title.clone()}>
+            {
+                format!(
+                    "/{} ({}), {}{}",
+                    view.route,
+                    view.title,
+                    match view.visibility {
+                        ViewVisibilityTypes::VisibilityPublic => "(Public)",
+                        ViewVisibilityTypes::VisibilityUnlisted => "(Unlisted)",
+                        ViewVisibilityTypes::VisibilityHidden => "(Hidden)",
+                    },
+                    match view.is_homepage {
+                        true => ", (Homepage)",
+                        false => "",
+                    },
+                )
+            }
+            </a>
+        }
+    }
+}
+
 impl PerseComponent for ViewList {
     type InputType = View;
 
@@ -24,9 +57,7 @@ impl PerseComponent for ViewList {
             <ul class="view_list">
                 {value.map(|view| view! {
                     <li class="view_list-item">
-                        <a href={format!("/{}", view.route)} title={view.title.clone()} aria-label={view.title.clone()}>
-                            {format!("/{} ({})", view.route, view.title)}
-                        </a>
+                        {Self::build_link(view)}
                     </li>
                 })}
             </ul>
@@ -49,24 +80,7 @@ impl PerseComponent for ViewList {
                 values
                     .map(|views| views.into_iter().map(|view| view! {
                         <li class="view_list-item">
-                            <a href={format!("/{}", view.route)} title={view.title.clone()} aria-label={view.title.clone()}>
-                                {
-                                    format!(
-                                        "/{} ({}), {}{}",
-                                        view.route,
-                                        view.title,
-                                        match view.visibility {
-                                            ViewVisibilityTypes::VisibilityPublic => "(Public)",
-                                            ViewVisibilityTypes::VisibilityUnlisted => "(Unlisted)",
-                                            ViewVisibilityTypes::VisibilityHidden => "(Hidden)",
-                                        },
-                                        match view.is_homepage {
-                                            true => ", (Homepage)",
-                                            false => "",
-                                        },
-                                    )
-                                }
-                            </a>
+                            {Self::build_link(view)}
                         </li>
                     }).collect_view())
             }
