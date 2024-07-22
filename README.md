@@ -21,11 +21,13 @@ This project is part of the slow code movement and is very much in development.
 - [x] Homepage functionality
 - [ ] Edit view functionality
 - [ ] Delete view functionality
-- [ ] Improve UI/UX design
-- [ ] Enhance error handling and logging
+- [ ] Improve UI/UX
+- [ ] Improve error handling
+- [ ] Logging
 - [ ] Dataframes project
 - [ ] Rebuilder project
-- [ ] Auth
+- [ ] Auth everywhere
+- [ ] Validation everywhere
 - [ ] Add support for plugins and extensions
 - [ ] Integration with third-party service
 - [ ] Improve performance and scalability
@@ -51,7 +53,7 @@ Use [**SQLx CLI:**](https://crates.io/crates/sqlx-cli) to manage Migrations.
 cargo install sqlx-cli
 ```
 
-Update your VS Code [**rust-analyzer:**](https://crates.io/crates/sqlx-cli) configuration to include the following, to enable intellisense for both SSR and CSR.  
+Update your VS Code [**rust-analyzer**](https://crates.io/crates/sqlx-cli) configuration to include the following, to enable intellisense for both SSR and CSR.  
 ```
 "rust-analyzer.cargo.features": "all",
 ```
