@@ -205,7 +205,7 @@ pub fn New() -> impl IntoView {
 async fn new_view(data: NewView) -> Result<PerseView, ServerFnError> {
     use perse_data::{Database, PerseApiRequests, PerseDatabaseModels};
 
-    // Declare mutable, and run Request & Custom validation
+    // Re-declare the data as mutable, and validate the request
     let mut data: NewView = data;
     data.is_valid()?;
 

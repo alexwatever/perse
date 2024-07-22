@@ -32,10 +32,10 @@ unstable_features = "warn"
 ##########################
 ### Perse `dependencies`
 ##########################
-perse_controller = { path = "./perse_controller", version = "=0.2.1" }
-perse_data = { path = "./perse_data", version = "=0.2.1" }
-perse_utils = { path = "./perse_utils", version = "=0.2.0" }
-perse_view = { path = "./perse_view", version = "=0.2.1" }
+perse_controller = { path = "./perse_controller", version = "=0.2.2" }
+perse_data = { path = "./perse_data", version = "=0.2.2" }
+perse_utils = { path = "./perse_utils", version = "=0.2.1" }
+perse_view = { path = "./perse_view", version = "=0.2.2" }
 actix-web = { version = "4.5.8", features = ["macros"] }
 chrono = { version = "0.4.38", features = ["serde"] }
 parse-display = { version = "0.9.1" }

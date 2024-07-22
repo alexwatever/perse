@@ -4,6 +4,7 @@ use leptos_router::*;
 
 // # Modules
 use perse_data::views::schema::View as PerseView;
+use perse_utils::ROUTE_PREFIX_ADMIN;
 use perse_view::{
     components::{initial_state::InitialState, loader::Loader, PerseComponent},
     views::{errors::NotFound, home::Home, new::New},
@@ -39,7 +40,7 @@ fn SetupRouter() -> impl IntoView {
 
                 // Setup the System routes
                 <Route
-                    path="/p/new"
+                    path={format!("/{ROUTE_PREFIX_ADMIN}/new")}
                     view=New
                     ssr=SsrMode::Async
                 />
@@ -67,9 +68,10 @@ struct PathFinderParams {
 /// * `impl IntoView` - The view for the requested route, if one exists
 #[component]
 fn PathFinder() -> impl IntoView {
-    let query = use_params::<PathFinderParams>();
+    // Get the URL path
+    let params = use_params::<PathFinderParams>();
     let requested_route = move || {
-        query.with(|q| {
+        params.with(|q| {
             q.as_ref()
                 .map(|q| q.route.clone().unwrap_or_default())
                 .unwrap()

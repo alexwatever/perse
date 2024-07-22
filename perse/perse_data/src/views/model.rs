@@ -1,7 +1,8 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use perse_utils::results::{ErrorTypes, PerseError};
+        use perse_utils::{ROUTE_PREFIX_ADMIN, ROUTE_PREFIX_API, results::{ErrorTypes, PerseError}};
         use sqlx::{query, query_as, types::Uuid, PgPool, Postgres, Transaction};
+        use validator::Validate;
 
         // # Modules
         use super::{
@@ -295,17 +296,38 @@ cfg_if::cfg_if! {
             /// # Validate the incoming `NewView` API request
             ///
             /// ## Fields
-            /// * `self` - The `NewView` to validate
+            /// * `self` - The `NewView` to validate, which has been URL encoded
             ///
             /// ## Returns
             /// * `Result<bool, PerseError>` - Whether the `NewView` is valid
             fn is_valid(&self) -> Result<(), PerseError> {
-                use validator::Validate;
-
                 // Request validation
                 self.validate()?;
 
-                // TODO: Custom Validation
+                // Custom Validation
+                if self.route.starts_with(ROUTE_PREFIX_ADMIN) || self.route.starts_with(&format!("/{ROUTE_PREFIX_ADMIN}")) {
+                    Err(PerseError::new(ErrorTypes::Validation, "The route cannot start with the Admin route prefix".to_string()))?;
+                } else if self.route.starts_with(&format!("{ROUTE_PREFIX_API}/")) ||
+                    self.route.starts_with(&format!("/{ROUTE_PREFIX_API}/")) ||
+                    self.route.contains("/api/") ||
+                    self.route.eq("api") ||
+                    self.route.eq("/api") ||
+                    self.route.starts_with("/api/") ||
+                    self.route.starts_with("api/") {
+                    Err(PerseError::new(ErrorTypes::Validation, "The route cannot start with the API route prefix".to_string()))?;
+                } else if self.route.is_empty() {
+                    Err(PerseError::new(ErrorTypes::Validation, "The route cannot be empty".to_string()))?;
+                } else if self.route.contains(' ') {
+                    Err(PerseError::new(ErrorTypes::Validation, "The route cannot contain spaces".to_string()))?;
+                } else if self.route.contains('.') {
+                    Err(PerseError::new(ErrorTypes::Validation, "The route cannot contain periods".to_string()))?;
+                } else if self.route.contains('&') {
+                    Err(PerseError::new(ErrorTypes::Validation, "The route cannot contain ampersands".to_string()))?;
+                } else if self.route.contains('?') {
+                    Err(PerseError::new(ErrorTypes::Validation, "The route cannot contain question marks".to_string()))?;
+                } else if self.route.contains('#') {
+                    Err(PerseError::new(ErrorTypes::Validation, "The route cannot contain hash marks".to_string()))?;
+                }
 
                 Ok(())
             }

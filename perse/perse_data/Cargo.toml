@@ -5,7 +5,7 @@
 
 [package]
 name = "perse_data"
-version = "0.2.1"
+version = "0.2.2"
 readme.workspace = true
 description.workspace = true
 repository.workspace = true
@@ -15,7 +15,7 @@ edition.workspace = true
 
 [dependencies]
 leptos.workspace = true
-perse_utils = { workspace = true }
+perse_utils.workspace = true
 
 cfg-if.workspace = true
 chrono = { workspace = true, features = ["serde"] }
